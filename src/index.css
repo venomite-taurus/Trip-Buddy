@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-travel-50: #FAF8F5;   --color-travel-100: #FAF6F0;  --color-travel-200: #F5EBE0;  --color-travel-300: #E3D5CA;  --color-travel-400: #D5BDAF;  --color-travel-500: #E07A5F;  --color-travel-600: #C8684F;  --color-travel-700: #A0523D;  --color-travel-800: #7E3F2E;  --color-travel-900: #5F3022;  --color-travel-950: #3D1C12;
+
+  --color-forest-50: #F4F7F6;
+  --color-forest-100: #E8ECEB;
+  --color-forest-200: #D2DAD6;
+  --color-forest-300: #A4B4AC;
+  --color-forest-400: #7B9387;
+  --color-forest-500: #3D5A50;
+  --color-forest-600: #334D43;
+  --color-forest-700: #2A3E36;
+  --color-forest-800: #202E28;
+  --color-forest-900: #151F1B;
+  --color-forest-950: #0B0F0D;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Outfit', Georgia, serif;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #FAF8F5; /* Warm background */
+  color: #151F1B; /* Forest-900 text */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', Georgia, serif;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF6F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #D5BDAF;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E07A5F;
+}

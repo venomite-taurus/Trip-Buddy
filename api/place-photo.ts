@@ -29,9 +29,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   }
 
   // Helper function to redirect directly to a scraped image by name
-  const serveScrapedImage = async (name: string, index: number) => {
+  const serveScrapedImage = async (name: string, index: number, category?: string, city?: string) => {
     try {
-      const urls = await resolveScrapedImageUrls(name);
+      const urls = await resolveScrapedImageUrls(name, category, city);
       if (urls && urls.length > 0) {
         const urlIndex = index % urls.length;
         const imageUrl = urls[urlIndex];
@@ -51,9 +51,24 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   // Handle search-photo ref: directly 302 redirect the browser to the crawled image URL
   if (ref.startsWith('search-photo:')) {
     const parts = ref.split(':');
-    const name = decodeURIComponent(parts[1] || '');
-    const index = parseInt(parts[2] || '0', 10);
-    const success = await serveScrapedImage(name, index);
+    let name = '';
+    let city = '';
+    let category = '';
+    let index = 0;
+
+    if (parts.length >= 5) {
+      name = decodeURIComponent(parts[1] || '');
+      city = decodeURIComponent(parts[2] || '');
+      category = decodeURIComponent(parts[3] || '');
+      index = parseInt(parts[4] || '0', 10);
+    } else {
+      name = decodeURIComponent(parts[1] || '');
+      index = parseInt(parts[2] || '0', 10);
+      category = categoryParam;
+      city = url.searchParams.get('city') || '';
+    }
+
+    const success = await serveScrapedImage(name, index, category, city);
     if (success) return;
     
     // Redirect to fallback if scraping fails
@@ -87,7 +102,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     
     console.warn(`Google photo fetch returned status ${response.status}. Attempting search scraping fallback...`);
     if (nameParam) {
-      const success = await serveScrapedImage(nameParam, 0);
+      const cityVal = url.searchParams.get('city') || '';
+      const success = await serveScrapedImage(nameParam, 0, categoryParam, cityVal);
       if (success) return;
     }
     
@@ -96,7 +112,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   } catch (e: any) {
     console.error(`Google photo proxy failed:`, e);
     if (nameParam) {
-      const success = await serveScrapedImage(nameParam, 0);
+      const cityVal = url.searchParams.get('city') || '';
+      const success = await serveScrapedImage(nameParam, 0, categoryParam, cityVal);
       if (success) return;
     }
     res.writeHead(302, { 'Location': fallbackUrl });

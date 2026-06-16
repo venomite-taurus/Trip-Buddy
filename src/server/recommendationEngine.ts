@@ -357,6 +357,20 @@ export function getMockPlaceDetails(placeId: string): Partial<Place> {
 }
 
 // Fetch single Place Details (used for Details Page or detail augmentation) (New)
+export function extractCityFromAddress(address: string): string {
+  if (!address) return '';
+  const parts = address.split(',');
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const part = parts[i].trim();
+    if (part.toLowerCase() === 'india') continue;
+    if (/\d+/.test(part)) continue; // ignore pincode/zipcode/state with pincode
+    const stateNames = ['rajasthan', 'puducherry', 'pondicherry', 'karnataka', 'goa', 'maharashtra', 'delhi', 'tamil nadu'];
+    if (stateNames.includes(part.toLowerCase())) continue;
+    return part;
+  }
+  return '';
+}
+
 export async function fetchPlaceDetails(placeId: string, apiKey: string): Promise<Partial<Place>> {
   if (placeId.startsWith('mock-')) {
     return getMockPlaceDetails(placeId);
@@ -386,10 +400,16 @@ export async function fetchPlaceDetails(placeId: string, apiKey: string): Promis
         });
       }
       if (photoRefs.length === 0) {
+        const city = data.formattedAddress ? extractCityFromAddress(data.formattedAddress) : '';
+        let category = 'visit';
+        if (data.types && Array.isArray(data.types)) {
+          if (data.types.includes('lodging')) category = 'stay';
+          else if (data.types.includes('restaurant') || data.types.includes('cafe')) category = 'eat';
+        }
         photoRefs.push(
-          `search-photo:${encodeURIComponent(nameText)}:0`,
-          `search-photo:${encodeURIComponent(nameText)}:1`,
-          `search-photo:${encodeURIComponent(nameText)}:2`
+          `search-photo:${encodeURIComponent(nameText)}:${encodeURIComponent(city)}:${encodeURIComponent(category)}:0`,
+          `search-photo:${encodeURIComponent(nameText)}:${encodeURIComponent(city)}:${encodeURIComponent(category)}:1`,
+          `search-photo:${encodeURIComponent(nameText)}:${encodeURIComponent(city)}:${encodeURIComponent(category)}:2`
         );
       }
       
@@ -690,10 +710,12 @@ export async function generateRecommendations(
       });
     }
     if (photoRefs.length === 0) {
+      const addr = p.formattedAddress || p.vicinity || p.formatted_address || '';
+      const city = addr ? extractCityFromAddress(addr) : (prefs.destination ? prefs.destination.split(',')[0].trim() : '');
       photoRefs.push(
-        `search-photo:${encodeURIComponent(nameText)}:0`,
-        `search-photo:${encodeURIComponent(nameText)}:1`,
-        `search-photo:${encodeURIComponent(nameText)}:2`
+        `search-photo:${encodeURIComponent(nameText)}:${encodeURIComponent(city)}:${encodeURIComponent(category)}:0`,
+        `search-photo:${encodeURIComponent(nameText)}:${encodeURIComponent(city)}:${encodeURIComponent(category)}:1`,
+        `search-photo:${encodeURIComponent(nameText)}:${encodeURIComponent(city)}:${encodeURIComponent(category)}:2`
       );
     }
 
@@ -1321,12 +1343,14 @@ export function resolvePlacePhotos(name: string): string[] | null {
   return null;
 }
 
-export function getPhotosForPlaceByName(name: string, _city: string, _category: string, _idx: number): string[] {
+export function getPhotosForPlaceByName(name: string, city: string, category: string, _idx: number): string[] {
   const encName = encodeURIComponent(name);
+  const encCity = encodeURIComponent(city);
+  const encCat = encodeURIComponent(category);
   return [
-    `search-photo:${encName}:0`,
-    `search-photo:${encName}:1`,
-    `search-photo:${encName}:2`
+    `search-photo:${encName}:${encCity}:${encCat}:0`,
+    `search-photo:${encName}:${encCity}:${encCat}:1`,
+    `search-photo:${encName}:${encCity}:${encCat}:2`
   ];
 }
 
@@ -1401,52 +1425,148 @@ export function getPhotosForPlace(city: string, category: string, idx: number): 
   return primaryPhotos;
 }
 
-// Cache for scraped images: Map<placeName, imageUrl[]>
+// Cache for scraped images: Map<searchQuery, imageUrl[]>
 const scrapedImagesCache = new Map<string, string[]>();
 
-export async function resolveScrapedImageUrls(name: string): Promise<string[]> {
-  const cacheKey = name.trim().toLowerCase();
+export function getCategoryTerms(category: string, city: string): string[] {
+  const c = category.toLowerCase();
+  const cityLower = city.toLowerCase();
+  
+  if (cityLower.includes('udaipur')) {
+    if (c === 'stay') return ['Udaipur hotel', 'Udaipur palace hotel', 'Udaipur resort'];
+    if (c === 'eat') return ['Udaipur restaurant', 'Udaipur food', 'Rajasthani thali'];
+    if (c === 'visit' || c === 'roam') return ['Udaipur lake', 'Udaipur City Palace', 'Jagmandir', 'Lake Pichola Udaipur'];
+  }
+  if (cityLower.includes('puducherry') || cityLower.includes('pondicherry')) {
+    if (c === 'stay') return ['Puducherry hotel', 'Pondicherry french quarter hotel', 'Pondicherry resort'];
+    if (c === 'eat') return ['Puducherry restaurant', 'Pondicherry french cafe', 'Pondicherry food'];
+    if (c === 'visit' || c === 'roam') return ['Pondicherry french quarter', 'Promenade Beach Puducherry', 'Auroville', 'Rock Beach Puducherry'];
+  }
+  if (cityLower.includes('goa')) {
+    if (c === 'stay') return ['Goa resort beach', 'Goa hotel', 'Goa lodging'];
+    if (c === 'eat') return ['Goa beach shack restaurant', 'Goa restaurant food', 'Goan fish curry'];
+    if (c === 'visit' || c === 'roam') return ['Goa beach', 'Anjuna beach Goa', 'Calangute beach', 'Old Goa church'];
+  }
+  if (cityLower.includes('bengaluru') || cityLower.includes('bangalore')) {
+    if (c === 'stay') return ['Bangalore luxury hotel', 'Bengaluru hotel'];
+    if (c === 'eat') return ['Bangalore cafe', 'Bangalore restaurant', 'South Indian breakfast Bangalore'];
+    if (c === 'visit' || c === 'roam') return ['Bangalore Palace', 'Lalbagh Glass House', 'Cubbon Park Bengaluru'];
+  }
+
+  const capCity = city.charAt(0).toUpperCase() + city.slice(1);
+  if (c === 'stay') {
+    return [`${capCity} hotel`, `${capCity} resort`, `${capCity} lodging`];
+  }
+  if (c === 'eat') {
+    return [`${capCity} restaurant`, `${capCity} cafe`, `${capCity} food`];
+  }
+  if (c === 'visit' || c === 'roam') {
+    return [`${capCity} tourist attraction`, `${capCity} sightseeing`, `${capCity} lake`, `${capCity} palace`, `${capCity} beach`, `${capCity} temple`];
+  }
+  
+  return [`${capCity} tourism`, `${capCity} landmark`];
+}
+
+export async function queryWikimediaCommons(searchQuery: string): Promise<string[]> {
+  const cacheKey = searchQuery.trim().toLowerCase();
   if (scrapedImagesCache.has(cacheKey)) {
     return scrapedImagesCache.get(cacheKey) || [];
   }
-
+  
   try {
-    const query = name.trim();
-    const mainUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
-    const mainRes = await fetch(mainUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-      }
-    });
-    if (mainRes.status !== 200) return [];
-    const mainHtml = await mainRes.text();
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&srnamespace=6&format=json&origin=*`;
+    const headers = {
+      'User-Agent': 'TripBuddy/1.0 (https://tripbuddy.example.com; contact@tripbuddy.example.com)'
+    };
     
-    const vqdRegex = /vqd=["']([^"']+)["']/i;
-    const match = mainHtml.match(vqdRegex);
-    if (!match) return [];
-    const vqd = match[1];
-
-    const imageUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(query)}&vqd=${vqd}&f=,,,`;
-    const imgRes = await fetch(imageUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-        'Referer': 'https://duckduckgo.com/'
-      }
-    });
-    if (imgRes.status !== 200) return [];
-    const data = await imgRes.json() as any;
+    const res = await fetch(url, { headers });
+    if (res.status !== 200) return [];
+    const data = await res.json() as any;
     
-    if (data.results && data.results.length > 0) {
-      const urls = data.results.map((r: any) => r.image).filter(Boolean);
-      if (urls.length > 0) {
-        scrapedImagesCache.set(cacheKey, urls);
-        return urls;
+    const searchResults = data.query?.search || [];
+    if (searchResults.length === 0) return [];
+    
+    const validTitles: string[] = [];
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'];
+    for (const item of searchResults) {
+      const title = item.title;
+      const titleLower = title.toLowerCase();
+      const isValid = imageExtensions.some(ext => titleLower.endsWith(ext));
+      if (isValid) {
+        validTitles.push(title);
+      }
+      if (validTitles.length >= 10) break;
+    }
+    
+    if (validTitles.length === 0) return [];
+    
+    const titlesParam = validTitles.map(encodeURIComponent).join('%7C');
+    const detailsUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${titlesParam}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+    
+    const detailsRes = await fetch(detailsUrl, { headers });
+    if (detailsRes.status !== 200) return [];
+    const detailsData = await detailsRes.json() as any;
+    
+    const pages = detailsData.query?.pages || {};
+    const urls: string[] = [];
+    
+    for (const title of validTitles) {
+      const page = Object.values(pages).find((p: any) => p.title === title) as any;
+      const imgUrl = page?.imageinfo?.[0]?.url;
+      if (imgUrl) {
+        urls.push(imgUrl);
       }
     }
+    
+    if (urls.length > 0) {
+      scrapedImagesCache.set(cacheKey, urls);
+      return urls;
+    }
   } catch (err) {
-    console.error(`Error scraping image URLs for ${name}:`, err);
+    console.error(`Wikimedia Commons query failed for "${searchQuery}":`, err);
   }
+  return [];
+}
+
+export async function resolveScrapedImageUrls(
+  name: string,
+  category?: string,
+  city?: string
+): Promise<string[]> {
+  const cleanedName = name.replace(/%[0-9A-Fa-f]{2}/g, ' ').trim();
+  
+  if (city) {
+    const query = `${cleanedName} ${city}`;
+    const urls = await queryWikimediaCommons(query);
+    if (urls.length > 0) return urls;
+  }
+  
+  const urlsSpecific = await queryWikimediaCommons(cleanedName);
+  if (urlsSpecific.length > 0) return urlsSpecific;
+  
+  if (city) {
+    const noiseWords = /\b(hotel|resort|restaurant|cafe|castle|inn|bar|lounge|palace|stay|eat|visit|roam)\b/gi;
+    const cleanNameOnly = cleanedName.replace(noiseWords, '').replace(/\s+/g, ' ').trim();
+    if (cleanNameOnly && cleanNameOnly.toLowerCase() !== cleanedName.toLowerCase()) {
+      const query = `${cleanNameOnly} ${city}`;
+      const urls = await queryWikimediaCommons(query);
+      if (urls.length > 0) return urls;
+    }
+  }
+  
+  if (category && city) {
+    const terms = getCategoryTerms(category, city);
+    for (const term of terms) {
+      const urls = await queryWikimediaCommons(term);
+      if (urls.length > 0) return urls;
+    }
+  }
+  
+  if (city) {
+    const urls = await queryWikimediaCommons(city);
+    if (urls.length > 0) return urls;
+  }
+  
   return [];
 }
 

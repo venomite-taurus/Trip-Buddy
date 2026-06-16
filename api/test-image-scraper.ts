@@ -4,80 +4,69 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   const results: Record<string, any> = {};
   const query = "Accord Puducherry";
 
-  // Test 1: DuckDuckGo Scraper
+  // Test 4: Google Images (Standard Desktop)
   try {
-    const mainUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
-    const mainRes = await fetch(mainUrl, {
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&tbm=isch`;
+    const res = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
       }
     });
-    const html = await mainRes.text();
-    const vqdRegex = /vqd=["']([^"']+)["']/i;
-    const match = html.match(vqdRegex);
-    results.ddg = {
-      status: mainRes.status,
-      vqdFound: !!match,
+    const html = await res.slice ? '' : await res.text();
+    
+    // Look for image source URLs
+    // Google Images often contains: [,["https://...",...]] or similar JSON array structures, or img src="https://encrypted-tbn0.gstatic.com/..."
+    const gstaticRegex = /src="([^"]+gstatic\.com\/images\?q=tbn:[^"]+)"/g;
+    const gstaticUrls = [];
+    let match;
+    while ((match = gstaticRegex.exec(html)) !== null) {
+      gstaticUrls.push(match[1]);
+    }
+
+    // Also look for full resolution image URLs in the script tags.
+    // They are usually in format: ["http...",width,height] or similar.
+    const urlRegex = /(https?:\/\/[^"'\s<>]+?\.(?:jpg|jpeg|png|gif))/gi;
+    const foundUrls = [];
+    let urlMatch;
+    while ((urlMatch = urlRegex.exec(html)) !== null) {
+      const u = urlMatch[1];
+      if (u.includes('gstatic.com') || u.includes('google.com') || u.includes('googleadservices')) continue;
+      if (!foundUrls.includes(u)) foundUrls.push(u);
+    }
+
+    results.google_standard = {
+      status: res.status,
       htmlLength: html.length,
-      snippet: html.slice(0, 500)
+      gstaticCount: gstaticUrls.length,
+      first5_gstatic: gstaticUrls.slice(0, 5),
+      foundUrlsCount: foundUrls.length,
+      first5_found: foundUrls.slice(0, 5),
+      title: html.match(/<title>([^<]+)<\/title>/i)?.[1] || 'No Title'
     };
   } catch (err: any) {
-    results.ddg = { error: err.message };
+    results.google_standard = { error: err.message };
   }
 
-  // Test 2: Bing Scraper
+  // Test 5: Google Images (No User Agent)
   try {
-    const url = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}`;
-    const bingRes = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-      }
-    });
-    const html = await bingRes.text();
-    const regex = /m="([^"]+)"/g;
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&tbm=isch`;
+    const res = await fetch(url);
+    const html = await res.text();
+    const gstaticRegex = /src="([^"]+gstatic\.com\/images\?q=tbn:[^"]+)"/g;
+    const gstaticUrls = [];
     let match;
-    const urls = [];
-    while ((match = regex.exec(html)) !== null) {
-      try {
-        const decoded = match[1].replace(/&quot;/g, '"');
-        const parsed = JSON.parse(decoded);
-        if (parsed.murl) urls.push(parsed.murl);
-      } catch (e) {}
+    while ((match = gstaticRegex.exec(html)) !== null) {
+      gstaticUrls.push(match[1]);
     }
-    results.bing = {
-      status: bingRes.status,
+    results.google_no_ua = {
+      status: res.status,
       htmlLength: html.length,
-      imageCount: urls.length,
-      first5: urls.slice(0, 5)
+      gstaticCount: gstaticUrls.length,
+      first5: gstaticUrls.slice(0, 5),
+      title: html.match(/<title>([^<]+)<\/title>/i)?.[1] || 'No Title'
     };
   } catch (err: any) {
-    results.bing = { error: err.message };
-  }
-
-  // Test 3: Yahoo Scraper
-  try {
-    const url = `https://images.search.yahoo.com/search/images?p=${encodeURIComponent(query)}`;
-    const yahooRes = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-      }
-    });
-    const html = await yahooRes.text();
-    const regex = /"iurl":"([^"]+)"/g;
-    let match;
-    const urls = [];
-    while ((match = regex.exec(html)) !== null) {
-      const imgUrl = match[1].replace(/\\/g, '');
-      if (imgUrl.startsWith('http')) urls.push(imgUrl);
-    }
-    results.yahoo = {
-      status: yahooRes.status,
-      htmlLength: html.length,
-      imageCount: urls.length,
-      first5: urls.slice(0, 5)
-    };
-  } catch (err: any) {
-    results.yahoo = { error: err.message };
+    results.google_no_ua = { error: err.message };
   }
 
   res.writeHead(200, { 'Content-Type': 'application/json' });

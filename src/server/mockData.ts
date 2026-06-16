@@ -6,7 +6,7 @@ export interface MockPlaceDetail {
   address: string;
   rating: number;
   user_ratings_total: number;
-  photo_refs: string[];
+  photo_refs?: string[];
   website?: string;
   contact_number?: string;
 }
@@ -1707,6 +1707,166 @@ export const REAL_CITY_PLACES: Record<string, CityData> = {
           "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
         ]
       }
+    ]
+  },
+  leh: {
+    stay: {
+      budget: [
+        { name: "Leyhar Karoo Guest House", address: "Upper Karzoo, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 85 },
+        { name: "Rainbow Guest House", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 120 },
+        { name: "Raybo Hostel", address: "Fort Road, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 140 },
+        { name: "Hearth Hostel", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 95 },
+        { name: "Jimmy's Homestay", address: "Tukcha Main Road, Leh, Ladakh 194101", rating: 4.8, user_ratings_total: 60 },
+        { name: "Mandarava Homestay", address: "Sankar Road, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 45 },
+        { name: "Leh Guest House", address: "Zangsti, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 70 },
+        { name: "Singay Guest House", address: "Changspa, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 90 },
+        { name: "Two Star Guest House", address: "Fort Road, Leh, Ladakh 194101", rating: 4.1, user_ratings_total: 55 },
+        { name: "Hill View Guest House", address: "Karzoo, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 30 },
+        { name: "Himalayan Guest House", address: "Upper Tukcha, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 110 },
+        { name: "Peace Guest House", address: "Changspa, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 150 }
+      ],
+      'mid-range': [
+        { name: "Hotel Tibet Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 240 },
+        { name: "Hotel Dragon Leh", address: "Old Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 310 },
+        { name: "Hotel Lasermo", address: "Fort Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 180 },
+        { name: "Hotel City Palace Leh", address: "Opp. Moravian Mission School, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 150 },
+        { name: "Lharimo Hotel Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 210 },
+        { name: "Spic n Span Leh", address: "Old Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 290 },
+        { name: "Reenam Hotel Leh", address: "Lower Tukcha Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 95 },
+        { name: "Hotel Shanti Nest", address: "Shanti Stupa Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 130 },
+        { name: "Ladakh Greens Hotel", address: "Lower Tukcha Road, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 175 },
+        { name: "Hotel Glacier View Leh", address: "Leh-Manali Highway, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 220 },
+        { name: "Hill Town Hotel Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 140 },
+        { name: "Hotel Caravan Sarai", address: "Skara, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 195 }
+      ],
+      luxury: [
+        { name: "The Grand Dragon Ladakh", address: "Old Road, Sheynam, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 1250 },
+        { name: "Hotel Singge Palace", address: "Old Road, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 890 },
+        { name: "Gomang Boutique Hotel", address: "Changspa, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 450 },
+        { name: "Zen Ladakh Resort", address: "Sheynam, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 680 },
+        { name: "Ladakh Sarai Resort", address: "Saboo, Leh, Ladakh 194101", rating: 4.8, user_ratings_total: 340 },
+        { name: "Chamba Camp Thiksey", address: "Kiari, Leh, Ladakh 194101", rating: 4.9, user_ratings_total: 110 },
+        { name: "Saboo Resorts Leh", address: "Saboo Village, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 160 },
+        { name: "Stok Palace Heritage Hotel", address: "Stok Village, Leh, Ladakh 194101", rating: 4.8, user_ratings_total: 210 },
+        { name: "The Driftwood Ladakh", address: "Shey, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 190 },
+        { name: "Hotel Druk Ladakh", address: "Skara Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 310 },
+        { name: "Hotel Rimo Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 250 },
+        { name: "Nimmu House Ladakh", address: "Nimmu Village, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 140 }
+      ]
+    },
+    eat: {
+      street: [
+        { name: "Gesmo Restaurant", address: "Fort Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 1150 },
+        { name: "Lamayuru Restaurant", address: "Fort Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 980 },
+        { name: "Neha Snacks Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.1, user_ratings_total: 620 },
+        { name: "Lala's Art Cafe", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 240 },
+        { name: "Pumpernickel German Bakery Leh", address: "Main Street, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 810 },
+        { name: "Solja Cafe Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 190 },
+        { name: "Penguin Garden Restaurant", address: "Fort Road, Leh, Ladakh 194101", rating: 4.0, user_ratings_total: 350 },
+        { name: "Wazwan Restaurant Leh", address: "Zangsti Road, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 280 },
+        { name: "Wonderland Restaurant & Cafe", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 410 },
+        { name: "Bob's Cafe Leh", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 150 },
+        { name: "Tenzin Dickey Tibetan Restaurant", address: "Zangsti, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 195 },
+        { name: "Apple Tree Restaurant Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.1, user_ratings_total: 310 }
+      ],
+      'mid-range': [
+        { name: "The Tibetan Kitchen", address: "Fort Road, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 2450 },
+        { name: "Chopsticks Noodle Bar", address: "Fort Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 1890 },
+        { name: "Alchi Kitchen Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 750 },
+        { name: "Il Forno Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 1350 },
+        { name: "Summer Harvest Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 1100 },
+        { name: "Open Hand Cafe Leh", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 420 },
+        { name: "Bodhi Greens Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 630 },
+        { name: "Cloud Cafe Leh", address: "Leh-Manali Highway, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 180 },
+        { name: "Devachan Cafe Leh", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 290 },
+        { name: "Sky Wok Ladakh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 380 },
+        { name: "Leh View Restaurant", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 140 },
+        { name: "Yak Cafe Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 920 }
+      ],
+      fine: [
+        { name: "Bon Appetit Leh", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 1560 },
+        { name: "The Grand Dragon Restaurant", address: "Old Road, Sheynam, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 510 },
+        { name: "G-Kitchen Restaurant", address: "Skara, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 210 },
+        { name: "The Central Asian Museum Cafe", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 140 },
+        { name: "Zing Singh Restaurant Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 310 },
+        { name: "Moonland Restaurant Leh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 180 },
+        { name: "Shanti Stupa View Cafe", address: "Shanti Stupa Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 290 },
+        { name: "Cafe de Ladakh", address: "Fort Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 150 },
+        { name: "The Coffee Legend Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 95 },
+        { name: "Roots Travel Cafe Leh", address: "Zangsti, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 120 },
+        { name: "Amigo Korean Restaurant Leh", address: "Changspa, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 180 },
+        { name: "Sengge Palace Dine", address: "Old Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 240 }
+      ]
+    },
+    visit: [
+      { name: "Leh Palace", address: "Namgyal Hill, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 5400 },
+      { name: "Shanti Stupa", address: "Shanti Stupa Road, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 8900 },
+      { name: "Namgyal Tsemo Monastery", address: "Namgyal Hill, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 1200 },
+      { name: "Hall of Fame Museum Leh", address: "Leh-Kargil Road, Leh, Ladakh 194101", rating: 4.8, user_ratings_total: 14500 },
+      { name: "Spituk Monastery", address: "Leh-Srinagar Highway, Spituk, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 2100 },
+      { name: "Thiksey Monastery", address: "Leh Manali Highway, Thiksey, Ladakh 194101", rating: 4.8, user_ratings_total: 6200 },
+      { name: "Hemis Monastery", address: "Hemis Village, Ladakh 194101", rating: 4.7, user_ratings_total: 3400 },
+      { name: "Shey Palace & Monastery", address: "Leh Manali Highway, Shey, Ladakh 194101", rating: 4.5, user_ratings_total: 2800 },
+      { name: "Gurudwara Pathar Sahib", address: "Leh-Kargil Road, Ladakh 194101", rating: 4.9, user_ratings_total: 9200 },
+      { name: "Magnetic Hill Ladakh", address: "Leh-Kargil Srinagar Highway, Ladakh 194101", rating: 4.2, user_ratings_total: 18500 },
+      { name: "Sangam Point", address: "Indus & Zanskar Confluence, Nimmu, Ladakh 194101", rating: 4.8, user_ratings_total: 11200 },
+      { name: "Zorawar Fort Leh", address: "Skara Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 850 },
+      { name: "Alchi Monastery", address: "Alchi Village, Ladakh 194101", rating: 4.6, user_ratings_total: 1500 },
+      { name: "Likir Monastery", address: "Likir Village, Ladakh 194101", rating: 4.5, user_ratings_total: 980 },
+      { name: "Phyang Monastery", address: "Phyang Village, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 750 },
+      { name: "Stok Palace Museum", address: "Stok Village, Ladakh 194101", rating: 4.5, user_ratings_total: 1100 },
+      { name: "Tsemo Castle Leh", address: "Namgyal Hill, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 450 },
+      { name: "Sankar Monastery", address: "Sankar Road, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 320 },
+      { name: "Basgo Monastery & Ruins", address: "Basgo Village, Leh-Kargil Road, Ladakh 194101", rating: 4.6, user_ratings_total: 890 },
+      { name: "Stakna Monastery", address: "Stakna Village, Leh Manali Highway, Ladakh 194101", rating: 4.7, user_ratings_total: 680 },
+      { name: "Chemrey Monastery", address: "Chemrey Village, Kharu, Ladakh 194101", rating: 4.6, user_ratings_total: 410 },
+      { name: "Takthok Monastery", address: "Sakti Village, Ladakh 194101", rating: 4.5, user_ratings_total: 290 },
+      { name: "Diskit Monastery", address: "Diskit, Nubra Valley, Ladakh 194101", rating: 4.8, user_ratings_total: 3400 },
+      { name: "Hunder Sand Dunes", address: "Hunder, Nubra Valley, Ladakh 194101", rating: 4.7, user_ratings_total: 8100 },
+      { name: "Pangong Tso Lake", address: "Changtang Region, Ladakh 194101", rating: 4.9, user_ratings_total: 24500 },
+      { name: "Tso Moriri Lake", address: "Rupshu Valley, Ladakh 194101", rating: 4.8, user_ratings_total: 3100 },
+      { name: "Khardung La Pass", address: "Leh-Nubra Road, Ladakh 194101", rating: 4.7, user_ratings_total: 19500 },
+      { name: "Chang La Pass", address: "Leh-Pangong Road, Ladakh 194101", rating: 4.6, user_ratings_total: 8400 },
+      { name: "Nubra Valley Scenic spot", address: "Nubra, Ladakh 194101", rating: 4.9, user_ratings_total: 12400 },
+      { name: "Zanskar Valley Scenic spot", address: "Zanskar, Ladakh 194101", rating: 4.8, user_ratings_total: 2300 },
+      { name: "Turtuk Village", address: "Nubra Valley near LOC, Ladakh 194101", rating: 4.9, user_ratings_total: 1800 },
+      { name: "Panamik Hot Springs", address: "Panamik, Nubra Valley, Ladakh 194101", rating: 4.0, user_ratings_total: 940 },
+      { name: "Central Asian Museum Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 410 },
+      { name: "Donkey Sanctuary Leh", address: "Korean Temple Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 190 },
+      { name: "Datun Sahib Tree", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 110 },
+      { name: "Sankar Gompa Monastery", address: "Sankar Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 130 }
+    ],
+    roam: [
+      { name: "Leh Main Bazaar", address: "Main Bazaar Road, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 8900 },
+      { name: "Moti Market Leh", address: "Main Bazaar, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 1200 },
+      { name: "Leh Old Town Walk", address: "Old Town, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 560 },
+      { name: "Sindhu Ghat", address: "Shey Village Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 2400 },
+      { name: "Sindhu River Bank", address: "Choglamsar, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 1300 },
+      { name: "Karzoo Duck Pond", address: "Karzoo, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 410 },
+      { name: "LEDeG Craft Shop", address: "Karzoo Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 180 },
+      { name: "Zangsti Road markets", address: "Zangsti, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 290 },
+      { name: "Fort Road Shopping street", address: "Fort Road, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 3100 },
+      { name: "Changspa Road stroll", address: "Changspa Road, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 1950 },
+      { name: "Leh Castle ruins trail", address: "Namgyal Hill, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 130 },
+      { name: "Stok Village fields", address: "Stok Village, Ladakh 194101", rating: 4.7, user_ratings_total: 350 },
+      { name: "Phyang village trail", address: "Phyang, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 110 },
+      { name: "Shey Marshes birdwatching", address: "Shey Village, Ladakh 194101", rating: 4.6, user_ratings_total: 90 },
+      { name: "Gangles village trek", address: "Gangles, Leh, Ladakh 194101", rating: 4.7, user_ratings_total: 120 },
+      { name: "Sankar village walking trail", address: "Sankar, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 80 },
+      { name: "Choglamsar Tibetan Market", address: "Choglamsar, Ladakh 194101", rating: 4.3, user_ratings_total: 450 },
+      { name: "Lower Karzoo walks", address: "Lower Karzoo, Leh, Ladakh 194101", rating: 4.2, user_ratings_total: 95 },
+      { name: "Leh Viewpoint (Khardung La Road)", address: "Khardung La Road, Leh, Ladakh 194101", rating: 4.8, user_ratings_total: 1200 },
+      { name: "Tukcha Road walk", address: "Tukcha, Leh, Ladakh 194101", rating: 4.3, user_ratings_total: 110 },
+      { name: "Upper Tukcha village path", address: "Upper Tukcha, Leh, Ladakh 194101", rating: 4.4, user_ratings_total: 75 },
+      { name: "Saboo Village walk", address: "Saboo, Leh, Ladakh 194101", rating: 4.6, user_ratings_total: 190 },
+      { name: "Spituk village walk", address: "Spituk, Leh, Ladakh 194101", rating: 4.5, user_ratings_total: 140 },
+      { name: "Thiksey village stroll", address: "Thiksey, Ladakh 194101", rating: 4.7, user_ratings_total: 210 },
+      { name: "Shey village trail", address: "Shey, Ladakh 194101", rating: 4.6, user_ratings_total: 130 },
+      { name: "Hemis National Park trek", address: "Hemis, Ladakh 194101", rating: 4.9, user_ratings_total: 620 },
+      { name: "Gya Village trail", address: "Gya, Ladakh 194101", rating: 4.5, user_ratings_total: 80 },
+      { name: "Rumtse scenic viewpoint", address: "Rumtse, Ladakh 194101", rating: 4.7, user_ratings_total: 190 },
+      { name: "Matho Village walk", address: "Matho, Ladakh 194101", rating: 4.6, user_ratings_total: 110 },
+      { name: "Stakna village trail", address: "Stakna, Ladakh 194101", rating: 4.5, user_ratings_total: 75 }
     ]
   }
 };

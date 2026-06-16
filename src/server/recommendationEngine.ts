@@ -58,7 +58,9 @@ const CITY_COORDINATES: Record<string, { lat: number; lng: number; formatted_add
   'manali': { lat: 32.2396, lng: 77.1887, formatted_address: 'Manali, Himachal Pradesh, India' },
   'delhi': { lat: 28.6139, lng: 77.2090, formatted_address: 'Delhi, India' },
   'mumbai': { lat: 19.0760, lng: 72.8777, formatted_address: 'Mumbai, Maharashtra, India' },
-  'bengaluru': { lat: 12.9716, lng: 77.5946, formatted_address: 'Bengaluru, Karnataka, India' }
+  'bengaluru': { lat: 12.9716, lng: 77.5946, formatted_address: 'Bengaluru, Karnataka, India' },
+  'leh': { lat: 34.1526, lng: 77.5771, formatted_address: 'Leh, Ladakh, India' },
+  'ladakh': { lat: 34.1526, lng: 77.5771, formatted_address: 'Leh, Ladakh, India' }
 };
 
 export function getLocalGeocoding(destination: string): { lat: number; lng: number; formatted_address: string } {
@@ -671,6 +673,7 @@ export async function generateRecommendations(
   // 2. Fetch all candidates concurrently
   const [
     lodgingRaw,
+    lodgingTextRaw,
     restaurantRaw,
     cafeRaw,
     barRaw,
@@ -690,6 +693,7 @@ export async function generateRecommendations(
     agencyRaw
   ] = await Promise.all([
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'lodging', null, apiKey),
+    fetchTextSearchPlaces(center.lat, center.lng, radiusMeters, `hotels in ${prefs.destination}`, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'restaurant', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'cafe', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'bar', null, apiKey),
@@ -765,12 +769,14 @@ export async function generateRecommendations(
 
   // 3. Process, Score and Rank each category
 
-  // Stays (Lodging) - Target top 20, rated 2.5+
-  const stays = lodgingRaw
+  // Stays (Lodging) - Target top 35, rated 2.5+
+  const staysRawCombined = [...lodgingRaw, ...lodgingTextRaw];
+  const uniqueStays = Array.from(new Map(staysRawCombined.map(item => [item.id || item.place_id || (item.displayName?.text || item.name || ''), item])).values());
+  const stays = uniqueStays
     .map(p => mapToPlace(p, 'stay', 'stay'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
     .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 20);
+    .slice(0, 35);
 
   // If no stays were found, it means the API requests failed or were denied.
   // We trigger the mock fallback recommendations generator so the app still works!
@@ -785,7 +791,8 @@ export async function generateRecommendations(
   const eats = uniqueEats
     .map(p => mapToPlace(p, 'eat', 'eat'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
-    .sort((a, b) => (b.score || 0) - (a.score || 0));
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .slice(0, 35);
 
   // Visits (Sightseeing/Attractions/Museums/Worship/Art/Amusement) - Rated 2.5+
   const visitRawCombined = [...attractionRaw, ...museumRaw, ...worshipRaw, ...artRaw, ...amusementRaw];
@@ -793,7 +800,8 @@ export async function generateRecommendations(
   const visits = uniqueVisits
     .map(p => mapToPlace(p, 'visit', 'visit'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
-    .sort((a, b) => (b.score || 0) - (a.score || 0));
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .slice(0, 35);
 
   // Roam (Parks, viewpoints, shopping malls, markets, hiking areas) - Rated 2.5+
   const roamRawCombined = [...parkRaw, ...mallRaw, ...marketRaw, ...hikingRaw];
@@ -803,7 +811,8 @@ export async function generateRecommendations(
     .filter(p => !visitIds.has(p.id || p.place_id))
     .map(p => mapToPlace(p, 'roam', 'roam'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
-    .sort((a, b) => (b.score || 0) - (a.score || 0));
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .slice(0, 30);
 
 
   // Transports (Bus and Train stations) - Target top 5
@@ -889,7 +898,7 @@ export function generateMockRecommendations(
   const stays: Place[] = [];
   const mockStaysData = cityData.stay[prefs.stayBudgetCategory] || cityData.stay['mid-range'];
   
-  const limitStays = Math.min(15, mockStaysData.length);
+  const limitStays = Math.min(35, mockStaysData.length);
   for (let i = 0; i < limitStays; i++) {
     const coords = offsetCoord(i);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -914,7 +923,7 @@ export function generateMockRecommendations(
   const eats: Place[] = [];
   const mockEatsData = cityData.eat[prefs.foodBudgetCategory] || cityData.eat['mid-range'];
   
-  const limitEats = Math.min(20, mockEatsData.length);
+  const limitEats = Math.min(35, mockEatsData.length);
   for (let i = 0; i < limitEats; i++) {
     const coords = offsetCoord(i + 8);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -939,7 +948,7 @@ export function generateMockRecommendations(
   const visits: Place[] = [];
   const mockVisitsData = cityData.visit;
   
-  const limitVisits = Math.min(25, mockVisitsData.length);
+  const limitVisits = Math.min(35, mockVisitsData.length);
   for (let i = 0; i < limitVisits; i++) {
     const coords = offsetCoord(i + 18);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -965,7 +974,7 @@ export function generateMockRecommendations(
   const roams: Place[] = [];
   const mockRoamsData = cityData.roam;
   
-  const limitRoams = Math.min(6, mockRoamsData.length);
+  const limitRoams = Math.min(30, mockRoamsData.length);
   for (let i = 0; i < limitRoams; i++) {
     const coords = offsetCoord(i + 30);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -1386,15 +1395,15 @@ export function getPhotosForPlace(city: string, category: string, idx: number): 
   if (category === 'stay') {
     const list = [...cityData.stay.budget, ...cityData.stay['mid-range'], ...cityData.stay.luxury];
     const item = list[idx % list.length];
-    primaryPhotos = [...item.photo_refs];
+    primaryPhotos = [...(item.photo_refs || [])];
   } else if (category === 'eat') {
     const list = [...cityData.eat.street, ...cityData.eat['mid-range'], ...cityData.eat.fine];
     const item = list[idx % list.length];
-    primaryPhotos = [...item.photo_refs];
+    primaryPhotos = [...(item.photo_refs || [])];
   } else {
     const list = category === 'roam' ? cityData.roam : cityData.visit;
     const item = list[idx % list.length];
-    primaryPhotos = [...item.photo_refs];
+    primaryPhotos = [...(item.photo_refs || [])];
   }
 
   // Pad to at least 3 photos using general photos from this city and category
@@ -1407,11 +1416,13 @@ export function getPhotosForPlace(city: string, category: string, idx: number): 
         : [...cityData.visit, ...cityData.roam];
     
     sourceList.forEach(item => {
-      item.photo_refs.forEach(p => {
-        if (!primaryPhotos.includes(p) && !allCityPhotos.includes(p)) {
-          allCityPhotos.push(p);
-        }
-      });
+      if (item.photo_refs) {
+        item.photo_refs.forEach(p => {
+          if (!primaryPhotos.includes(p) && !allCityPhotos.includes(p)) {
+            allCityPhotos.push(p);
+          }
+        });
+      }
     });
 
     // If still not enough, add from the other list
@@ -1421,11 +1432,13 @@ export function getPhotosForPlace(city: string, category: string, idx: number): 
         : [...cityData.stay.budget, ...cityData.stay['mid-range'], ...cityData.stay.luxury];
       
       backupList.forEach(item => {
-        item.photo_refs.forEach(p => {
-          if (!primaryPhotos.includes(p) && !allCityPhotos.includes(p)) {
-            allCityPhotos.push(p);
-          }
-        });
+        if (item.photo_refs) {
+          item.photo_refs.forEach(p => {
+            if (!primaryPhotos.includes(p) && !allCityPhotos.includes(p)) {
+              allCityPhotos.push(p);
+            }
+          });
+        }
       });
     }
 

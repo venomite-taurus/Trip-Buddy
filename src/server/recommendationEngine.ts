@@ -662,12 +662,23 @@ export async function generateRecommendations(
     const scoreAndDist = scorePlace(p, center.lat, center.lng, prefs.radius, category, prefs);
     const nameText = p.displayName?.text || p.name || '';
     
-    // Always use search-photo fallback because Google media endpoint returns 403 due to billing restrictions
-    const photoRefs = [
-      `search-photo:${encodeURIComponent(nameText)}:0`,
-      `search-photo:${encodeURIComponent(nameText)}:1`,
-      `search-photo:${encodeURIComponent(nameText)}:2`
-    ];
+    // Extract Google photos if they exist, otherwise use search-photo crawler as fallback
+    const photoRefs: string[] = [];
+    if (p.photos && Array.isArray(p.photos) && p.photos.length > 0) {
+      p.photos.forEach((photo: any) => {
+        if (photo.name) {
+          photoRefs.push(photo.name);
+        }
+      });
+    }
+    if (photoRefs.length === 0) {
+      photoRefs.push(
+        `search-photo:${encodeURIComponent(nameText)}:0`,
+        `search-photo:${encodeURIComponent(nameText)}:1`,
+        `search-photo:${encodeURIComponent(nameText)}:2`
+      );
+    }
+
 
     // Parse price level enum
     let priceLevelNum = p.priceLevel ?? p.price_level;

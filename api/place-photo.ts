@@ -7,6 +7,20 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   const url = new URL(req.url || '', `http://${req.headers.host}`);
   const ref = url.searchParams.get('ref');
   const nameParam = url.searchParams.get('name');
+  const categoryParam = url.searchParams.get('category') || '';
+
+  const fallbacks: Record<string, string> = {
+    stay: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+    eat: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80',
+    visit: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=800&q=80',
+    roam: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=800&q=80',
+    transport: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
+    bus: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
+    train: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=800&q=80',
+    rental: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=800&q=80',
+    agency: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80'
+  };
+  const fallbackUrl = fallbacks[categoryParam] || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
 
   if (!ref) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -59,7 +73,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     if (success) return;
     
     // Redirect to fallback if scraping fails
-    res.writeHead(302, { 'Location': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80' });
+    res.writeHead(302, { 'Location': fallbackUrl });
     res.end();
     return;
   }
@@ -91,7 +105,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       if (success) return;
     }
     
-    res.writeHead(302, { 'Location': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80' });
+    res.writeHead(302, { 'Location': fallbackUrl });
     res.end();
   } catch (e: any) {
     console.error(`Google photo proxy failed:`, e);
@@ -99,7 +113,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       const success = await serveScrapedImage(nameParam, 0);
       if (success) return;
     }
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: e.message }));
+    res.writeHead(302, { 'Location': fallbackUrl });
+    res.end();
   }
 }

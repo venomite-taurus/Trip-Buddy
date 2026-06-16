@@ -410,7 +410,9 @@ export const TripResults: React.FC = () => {
       return fallbacks[category] || fallbacks['visit'];
     }
     if (ref.startsWith('http://') || ref.startsWith('https://')) return ref
-    return `/api/place-photo?ref=${ref}`
+    const nameParam = place?.name ? `&name=${encodeURIComponent(place.name)}` : '';
+    const categoryParam = place?.type ? `&category=${encodeURIComponent(place.type)}` : '';
+    return `/api/place-photo?ref=${ref}${nameParam}${categoryParam}`
   }
 
 

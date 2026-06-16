@@ -266,7 +266,9 @@ export const PlaceDetail: React.FC = () => {
       return fallbacksByIndex[catKey][index % 3];
     }
     if (ref.startsWith('http://') || ref.startsWith('https://')) return ref
-    return `/api/place-photo?ref=${ref}`
+    const nameParam = place?.name ? `&name=${encodeURIComponent(place.name)}` : '';
+    const categoryParam = place?.type ? `&category=${encodeURIComponent(place.type)}` : '';
+    return `/api/place-photo?ref=${ref}${nameParam}${categoryParam}`
   }
 
 

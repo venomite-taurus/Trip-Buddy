@@ -4,69 +4,40 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   const results: Record<string, any> = {};
   const query = "Accord Puducherry";
 
-  // Test 4: Google Images (Standard Desktop)
+  // Test 6: Flickr Public Feed Search
   try {
-    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&tbm=isch`;
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
-      }
-    });
-    const html = await res.slice ? '' : await res.text();
-    
-    // Look for image source URLs
-    // Google Images often contains: [,["https://...",...]] or similar JSON array structures, or img src="https://encrypted-tbn0.gstatic.com/..."
-    const gstaticRegex = /src="([^"]+gstatic\.com\/images\?q=tbn:[^"]+)"/g;
-    const gstaticUrls = [];
-    let match;
-    while ((match = gstaticRegex.exec(html)) !== null) {
-      gstaticUrls.push(match[1]);
-    }
-
-    // Also look for full resolution image URLs in the script tags.
-    // They are usually in format: ["http...",width,height] or similar.
-    const urlRegex = /(https?:\/\/[^"'\s<>]+?\.(?:jpg|jpeg|png|gif))/gi;
-    const foundUrls = [];
-    let urlMatch;
-    while ((urlMatch = urlRegex.exec(html)) !== null) {
-      const u = urlMatch[1];
-      if (u.includes('gstatic.com') || u.includes('google.com') || u.includes('googleadservices')) continue;
-      if (!foundUrls.includes(u)) foundUrls.push(u);
-    }
-
-    results.google_standard = {
-      status: res.status,
-      htmlLength: html.length,
-      gstaticCount: gstaticUrls.length,
-      first5_gstatic: gstaticUrls.slice(0, 5),
-      foundUrlsCount: foundUrls.length,
-      first5_found: foundUrls.slice(0, 5),
-      title: html.match(/<title>([^<]+)<\/title>/i)?.[1] || 'No Title'
-    };
-  } catch (err: any) {
-    results.google_standard = { error: err.message };
-  }
-
-  // Test 5: Google Images (No User Agent)
-  try {
-    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}&tbm=isch`;
+    const url = `https://www.flickr.com/services/feeds/photos_public.gne?tags=${encodeURIComponent(query)}&format=json&nojsoncallback=1`;
     const res = await fetch(url);
-    const html = await res.text();
-    const gstaticRegex = /src="([^"]+gstatic\.com\/images\?q=tbn:[^"]+)"/g;
-    const gstaticUrls = [];
-    let match;
-    while ((match = gstaticRegex.exec(html)) !== null) {
-      gstaticUrls.push(match[1]);
+    const text = await res.text();
+    // Flickr returns a json structure: {"items": [{"media": {"m": "https://..."}}]}
+    let data: any = {};
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      // In case DDG or Flickr formats it weirdly
+      data = { raw: text.slice(0, 500) };
     }
-    results.google_no_ua = {
+    
+    const urls = [];
+    if (data.items) {
+      for (const item of data.items) {
+        if (item.media && item.media.m) {
+          // Flickr media 'm' is a small thumbnail. We can convert it to a larger image URL
+          // by replacing '_m.jpg' with '_b.jpg' (large size)
+          const imgUrl = item.media.m.replace('_m.', '_b.');
+          urls.push(imgUrl);
+        }
+      }
+    }
+
+    results.flickr = {
       status: res.status,
-      htmlLength: html.length,
-      gstaticCount: gstaticUrls.length,
-      first5: gstaticUrls.slice(0, 5),
-      title: html.match(/<title>([^<]+)<\/title>/i)?.[1] || 'No Title'
+      count: urls.length,
+      first5: urls.slice(0, 5),
+      rawSnippet: text.slice(0, 500)
     };
   } catch (err: any) {
-    results.google_no_ua = { error: err.message };
+    results.flickr = { error: err.message };
   }
 
   res.writeHead(200, { 'Content-Type': 'application/json' });

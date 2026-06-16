@@ -369,10 +369,10 @@ export const TripResults: React.FC = () => {
 
       const randomizedResults = {
         ...data,
-        stays: randomizeList(data.stays).slice(0, 8),
-        eats: randomizeList(data.eats).slice(0, 10),
-        visits: randomizeList(data.visits).slice(0, 12),
-        roams: randomizeList(data.roams).slice(0, 6)
+        stays: randomizeList(data.stays).slice(0, 15),
+        eats: randomizeList(data.eats).slice(0, 20),
+        visits: randomizeList(data.visits).slice(0, 25),
+        roams: randomizeList(data.roams).slice(0, 15)
       }
 
       localStorage.setItem('active_trip_results', JSON.stringify(randomizedResults))

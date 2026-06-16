@@ -115,6 +115,8 @@ export const MyTrips: React.FC = () => {
                     google_rating: r.places.google_rating,
                     user_ratings_total: r.places.user_ratings_total,
                     photo_refs: r.places.photo_refs,
+                    contact_number: r.places.contact_number,
+                    website: r.places.website,
                     score: Number(r.score),
                     day_number: r.day_number
                   }

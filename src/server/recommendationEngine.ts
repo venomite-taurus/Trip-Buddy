@@ -248,8 +248,8 @@ export function getMockPlaceDetails(placeId: string): Partial<Place> {
   let userRatingsTotal = 150;
   let priceLevel = 2;
   let photoRefs: string[] = [];
-  let website = 'https://www.tripbuddy-india-tour.com';
-  let contactNumber = `+91 98765 4321${idx}`;
+  let website = '';
+  let contactNumber = '';
 
   if (category === 'stay') {
     const list = [...cityData.stay.budget, ...cityData.stay['mid-range'], ...cityData.stay.luxury];
@@ -673,10 +673,17 @@ export async function generateRecommendations(
     lodgingRaw,
     restaurantRaw,
     cafeRaw,
+    barRaw,
+    bakeryRaw,
     attractionRaw,
     museumRaw,
-    parkRaw,
     worshipRaw,
+    artRaw,
+    amusementRaw,
+    parkRaw,
+    mallRaw,
+    marketRaw,
+    hikingRaw,
     busRaw,
     trainRaw,
     rentalRaw,
@@ -685,10 +692,17 @@ export async function generateRecommendations(
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'lodging', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'restaurant', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'cafe', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'bar', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'bakery', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'tourist_attraction', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'museum', null, apiKey),
-    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'park', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'place_of_worship', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'art_gallery', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'amusement_park', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'park', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'shopping_mall', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'market', null, apiKey),
+    fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'hiking_area', null, apiKey),
     fetchNearbyPlaces(center.lat, center.lng, radiusMeters, 'bus_station', null, apiKey),
     fetchTextSearchPlaces(center.lat, center.lng, radiusMeters, `railway station near ${prefs.destination}`, apiKey),
     fetchTextSearchPlaces(center.lat, center.lng, radiusMeters, `bike scooty rental near ${prefs.destination}`, apiKey),
@@ -751,12 +765,12 @@ export async function generateRecommendations(
 
   // 3. Process, Score and Rank each category
 
-  // Stays (Lodging) - Target top 12, rated 2.5+
+  // Stays (Lodging) - Target top 20, rated 2.5+
   const stays = lodgingRaw
     .map(p => mapToPlace(p, 'stay', 'stay'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
     .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 12);
+    .slice(0, 20);
 
   // If no stays were found, it means the API requests failed or were denied.
   // We trigger the mock fallback recommendations generator so the app still works!
@@ -765,26 +779,27 @@ export async function generateRecommendations(
     return generateMockRecommendations(center, prefs);
   }
 
-  // Eats (Restaurants/Cafes) - Rated 2.5+
-  const eatsRawCombined = [...restaurantRaw, ...cafeRaw];
+  // Eats (Restaurants/Cafes/Bars/Bakeries) - Rated 2.5+
+  const eatsRawCombined = [...restaurantRaw, ...cafeRaw, ...barRaw, ...bakeryRaw];
   const uniqueEats = Array.from(new Map(eatsRawCombined.map(item => [item.id || item.place_id || (item.displayName?.text || item.name || ''), item])).values());
   const eats = uniqueEats
     .map(p => mapToPlace(p, 'eat', 'eat'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
     .sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  // Visits (Sightseeing/Attractions/Museums/Temples) - Rated 2.5+
-  const visitRawCombined = [...attractionRaw, ...museumRaw, ...worshipRaw];
+  // Visits (Sightseeing/Attractions/Museums/Worship/Art/Amusement) - Rated 2.5+
+  const visitRawCombined = [...attractionRaw, ...museumRaw, ...worshipRaw, ...artRaw, ...amusementRaw];
   const uniqueVisits = Array.from(new Map(visitRawCombined.map(item => [item.id || item.place_id || (item.displayName?.text || item.name || ''), item])).values());
   const visits = uniqueVisits
     .map(p => mapToPlace(p, 'visit', 'visit'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
     .sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  // Roam (Parks, viewpoints, markets, local things) - Rated 2.5+
-  // We filter out any place already categorized as "visit"
+  // Roam (Parks, viewpoints, shopping malls, markets, hiking areas) - Rated 2.5+
+  const roamRawCombined = [...parkRaw, ...mallRaw, ...marketRaw, ...hikingRaw];
+  const uniqueRoams = Array.from(new Map(roamRawCombined.map(item => [item.id || item.place_id || (item.displayName?.text || item.name || ''), item])).values());
   const visitIds = new Set(visits.map(v => v.place_id));
-  const roams = parkRaw
+  const roams = uniqueRoams
     .filter(p => !visitIds.has(p.id || p.place_id))
     .map(p => mapToPlace(p, 'roam', 'roam'))
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
@@ -874,7 +889,7 @@ export function generateMockRecommendations(
   const stays: Place[] = [];
   const mockStaysData = cityData.stay[prefs.stayBudgetCategory] || cityData.stay['mid-range'];
   
-  const limitStays = Math.min(8, mockStaysData.length);
+  const limitStays = Math.min(15, mockStaysData.length);
   for (let i = 0; i < limitStays; i++) {
     const coords = offsetCoord(i);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -899,7 +914,7 @@ export function generateMockRecommendations(
   const eats: Place[] = [];
   const mockEatsData = cityData.eat[prefs.foodBudgetCategory] || cityData.eat['mid-range'];
   
-  const limitEats = Math.min(10, mockEatsData.length);
+  const limitEats = Math.min(20, mockEatsData.length);
   for (let i = 0; i < limitEats; i++) {
     const coords = offsetCoord(i + 8);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -924,7 +939,7 @@ export function generateMockRecommendations(
   const visits: Place[] = [];
   const mockVisitsData = cityData.visit;
   
-  const limitVisits = Math.min(12, mockVisitsData.length);
+  const limitVisits = Math.min(25, mockVisitsData.length);
   for (let i = 0; i < limitVisits; i++) {
     const coords = offsetCoord(i + 18);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
@@ -1024,7 +1039,7 @@ export function generateMockRecommendations(
       google_rating: Number((4.3 + (i % 3) * 0.2).toFixed(1)),
       user_ratings_total: 35 + i * 25,
       photo_refs: getPhotosForPlaceByName(rName, matchedCity, 'rental', i),
-      contact_number: `+91 98765 4321${i}`,
+      contact_number: '',
       distance_from_center: Number(dist.toFixed(2)),
       score: Number((0.90 - (i * 0.02)).toFixed(4))
     });
@@ -1054,7 +1069,7 @@ export function generateMockRecommendations(
       google_rating: Number((4.1 + (i % 4) * 0.2).toFixed(1)),
       user_ratings_total: 25 + i * 15,
       photo_refs: getPhotosForPlaceByName(aName, matchedCity, 'agency', i),
-      contact_number: `+91 99999 8888${i}`,
+      contact_number: '',
       distance_from_center: Number(dist.toFixed(2)),
       score: Number((0.92 - (i * 0.02)).toFixed(4))
     });

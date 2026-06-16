@@ -400,7 +400,7 @@ function generateMockRecommendations(
       address: `Town Market Road, ${city}, India`,
       google_rating: Number((4.3 + (i % 3) * 0.2).toFixed(1)),
       user_ratings_total: 35 + i * 25,
-      contact_number: `+91 98765 4321${i}`,
+      contact_number: '',
       distance_from_center: Number(dist.toFixed(2)),
       score: 0.90 - (i * 0.02)
     });
@@ -428,7 +428,7 @@ function generateMockRecommendations(
       address: `Agency Row Road, ${city}, India`,
       google_rating: Number((4.1 + (i % 4) * 0.2).toFixed(1)),
       user_ratings_total: 25 + i * 15,
-      contact_number: `+91 99999 8888${i}`,
+      contact_number: '',
       distance_from_center: Number(dist.toFixed(2)),
       score: 0.92 - (i * 0.02)
     });

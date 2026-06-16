@@ -412,7 +412,9 @@ export const TripResults: React.FC = () => {
     if (ref.startsWith('http://') || ref.startsWith('https://')) return ref
     const nameParam = place?.name ? `&name=${encodeURIComponent(place.name)}` : '';
     const categoryParam = place?.type ? `&category=${encodeURIComponent(place.type)}` : '';
-    return `/api/place-photo?ref=${ref}${nameParam}${categoryParam}`
+    const cityVal = inputs?.destination ? inputs.destination.split(',')[0].trim() : '';
+    const cityParam = cityVal ? `&city=${encodeURIComponent(cityVal)}` : '';
+    return `/api/place-photo?ref=${ref}${nameParam}${categoryParam}${cityParam}`
   }
 
 
@@ -1166,31 +1168,34 @@ const PlaceCard: React.FC<PlaceCardProps> = ({
   onDetails,
   onAddToExpenses
 }) => {
+  const [imageError, setImageError] = useState(false);
+  const cat = place.type || 'visit';
+
+  const renderCategoryIcon = () => {
+    const iconClass = "w-8 h-8 text-forest-500/70";
+    if (cat === 'stay') return <Hotel className={iconClass} />;
+    if (cat === 'eat') return <Utensils className={iconClass} />;
+    return <Compass className={iconClass} />;
+  };
+
   return (
     <div className="bg-white rounded-3xl border border-travel-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group h-full">
       {/* Photo */}
-      <div className="h-40 w-full overflow-hidden relative bg-travel-100 shrink-0">
-        <img 
-          src={getPhoto(place.photo_refs && place.photo_refs[0], place)} 
-          alt={place.name} 
-          className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300"
-          referrerPolicy="no-referrer"
-          onError={(e) => {
-            const cat = place.type || 'visit';
-            const fallbacks: Record<string, string> = {
-              stay: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80',
-              eat: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=500&q=80',
-              visit: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=500&q=80',
-              roam: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=500&q=80',
-              transport: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=500&q=80',
-              bus: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=500&q=80',
-              train: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=500&q=80',
-              rental: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=500&q=80',
-              agency: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=500&q=80'
-            };
-            e.currentTarget.src = fallbacks[cat] || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=500&q=80';
-          }}
-        />
+      <div className="h-40 w-full overflow-hidden relative bg-travel-50 shrink-0 border-b border-travel-100 flex items-center justify-center">
+        {imageError ? (
+          <div className="w-full h-full bg-gradient-to-br from-travel-50 to-travel-100/50 flex flex-col items-center justify-center space-y-2 select-none">
+            {renderCategoryIcon()}
+            <span className="text-[10px] font-bold text-forest-400 uppercase tracking-wide">No photo available</span>
+          </div>
+        ) : (
+          <img 
+            src={getPhoto(place.photo_refs && place.photo_refs[0], place)} 
+            alt={place.name} 
+            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300"
+            referrerPolicy="no-referrer"
+            onError={() => setImageError(true)}
+          />
+        )}
         {place.score && (
           <span className="absolute top-3 right-3 px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-[9px] font-extrabold rounded-md uppercase tracking-wider">
             Match: {Math.round(place.score * 100)}%

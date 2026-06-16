@@ -12,7 +12,9 @@ import {
   Camera, 
   Navigation, 
   Trash2,
-  Compass
+  Compass,
+  Hotel,
+  Utensils
 } from 'lucide-react'
 
 interface FeedbackItem {
@@ -44,6 +46,22 @@ export const PlaceDetail: React.FC = () => {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([])
   
   const [tripInputs, setTripInputs] = useState<any>(null)
+  const [photoErrors, setPhotoErrors] = useState<Record<number, boolean>>({});
+
+  const renderDetailPlaceholder = (_idx: number) => {
+    const iconClass = "w-12 h-12 text-forest-500/50";
+    const cat = place?.type || 'visit';
+    let Icon = Compass;
+    if (cat === 'stay') Icon = Hotel;
+    else if (cat === 'eat') Icon = Utensils;
+    
+    return (
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-travel-50 to-travel-100/50 flex flex-col items-center justify-center space-y-2 select-none border border-travel-200 rounded-3xl">
+        <Icon className={iconClass} />
+        <span className="text-[10px] font-bold text-forest-400 uppercase tracking-wide font-sans">No photo available</span>
+      </div>
+    );
+  };
 
   // Load place details and feedback
   useEffect(() => {
@@ -268,7 +286,9 @@ export const PlaceDetail: React.FC = () => {
     if (ref.startsWith('http://') || ref.startsWith('https://')) return ref
     const nameParam = place?.name ? `&name=${encodeURIComponent(place.name)}` : '';
     const categoryParam = place?.type ? `&category=${encodeURIComponent(place.type)}` : '';
-    return `/api/place-photo?ref=${ref}${nameParam}${categoryParam}`
+    const cityVal = tripInputs?.destination ? tripInputs.destination.split(',')[0].trim() : '';
+    const cityParam = cityVal ? `&city=${encodeURIComponent(cityVal)}` : '';
+    return `/api/place-photo?ref=${ref}${nameParam}${categoryParam}${cityParam}`
   }
 
 
@@ -495,77 +515,41 @@ export const PlaceDetail: React.FC = () => {
           {/* Photo Carousel/Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[300px] sm:h-[400px]">
             {/* Main photo */}
-            <div className="md:col-span-2 rounded-3xl overflow-hidden bg-travel-100 border border-travel-200 relative h-full">
-              <img 
-                src={getPhotoUrl(place.photo_refs && place.photo_refs[0], 0)} 
-                alt={place.name} 
-                className="absolute inset-0 w-full h-full object-cover"
-                referrerPolicy="no-referrer"
-                onError={(e) => {
-                  const category = place.type || 'visit';
-                  const fallbacks: Record<string, string> = {
-                    stay: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
-                    eat: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80',
-                    visit: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=800&q=80',
-                    roam: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=800&q=80',
-                    transport: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
-                    bus: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
-                    train: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=800&q=80',
-                    rental: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=800&q=80',
-                    agency: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=80'
-                  };
-                  e.currentTarget.src = fallbacks[category] || fallbacks['visit'];
-                }}
-              />
+            <div className="md:col-span-2 rounded-3xl overflow-hidden bg-travel-100 border border-travel-200 relative h-full flex items-center justify-center">
+              {photoErrors[0] ? renderDetailPlaceholder(0) : (
+                <img 
+                  src={getPhotoUrl(place.photo_refs && place.photo_refs[0], 0)} 
+                  alt={place.name} 
+                  className="absolute inset-0 w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                  onError={() => setPhotoErrors(prev => ({ ...prev, 0: true }))}
+                />
+              )}
             </div>
             
             {/* Side photos */}
             <div className="hidden md:flex flex-col gap-4 h-full">
-              <div className="h-[calc(50%-0.5rem)] rounded-3xl overflow-hidden bg-travel-100 border border-travel-200 relative">
-                <img 
-                  src={getPhotoUrl(place.photo_refs && place.photo_refs[1], 1)} 
-                  alt={place.name} 
-                  className="absolute inset-0 w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    const category = place.type || 'visit';
-                    const fallbacks: Record<string, string> = {
-                      stay: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=500&q=80',
-                      eat: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=80',
-                      visit: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=500&q=80',
-                      roam: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=500&q=80',
-                      transport: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=500&q=80',
-                      bus: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=500&q=80',
-                      train: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?auto=format&fit=crop&w=500&q=80',
-                      rental: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=500&q=80',
-                      agency: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=500&q=80'
-                    };
-                    e.currentTarget.src = fallbacks[category] || fallbacks['visit'];
-                  }}
-                />
+              <div className="h-[calc(50%-0.5rem)] rounded-3xl overflow-hidden bg-travel-100 border border-travel-200 relative flex items-center justify-center">
+                {photoErrors[1] ? renderDetailPlaceholder(1) : (
+                  <img 
+                    src={getPhotoUrl(place.photo_refs && place.photo_refs[1], 1)} 
+                    alt={place.name} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                    onError={() => setPhotoErrors(prev => ({ ...prev, 1: true }))}
+                  />
+                )}
               </div>
-              <div className="h-[calc(50%-0.5rem)] rounded-3xl overflow-hidden bg-travel-100 border border-travel-200 relative">
-                <img 
-                  src={getPhotoUrl(place.photo_refs && place.photo_refs[2], 2)} 
-                  alt={place.name} 
-                  className="absolute inset-0 w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    const category = place.type || 'visit';
-                    const fallbacks: Record<string, string> = {
-                      stay: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80',
-                      eat: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80',
-                      visit: 'https://images.unsplash.com/photo-1585135497273-1a86b09fe70e?auto=format&fit=crop&w=500&q=80',
-                      roam: 'https://images.unsplash.com/photo-1506461883276-594a12b11cf3?auto=format&fit=crop&w=500&q=80',
-                      transport: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?auto=format&fit=crop&w=500&q=80',
-                      bus: 'https://images.unsplash.com/photo-1515162305285-0293e4767cc2?auto=format&fit=crop&w=500&q=80',
-                      train: 'https://images.unsplash.com/photo-1541417904950-b855846fe074?auto=format&fit=crop&w=500&q=80',
-                      rental: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=500&q=80',
-                      agency: 'https://images.unsplash.com/photo-1500835595337-f7400171ab6f?auto=format&fit=crop&w=500&q=80'
-                    };
-                    e.currentTarget.src = fallbacks[category] || fallbacks['visit'];
-                  }}
-                />
+              <div className="h-[calc(50%-0.5rem)] rounded-3xl overflow-hidden bg-travel-100 border border-travel-200 relative flex items-center justify-center">
+                {photoErrors[2] ? renderDetailPlaceholder(2) : (
+                  <img 
+                    src={getPhotoUrl(place.photo_refs && place.photo_refs[2], 2)} 
+                    alt={place.name} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                    onError={() => setPhotoErrors(prev => ({ ...prev, 2: true }))}
+                  />
+                )}
               </div>
             </div>
           </div>

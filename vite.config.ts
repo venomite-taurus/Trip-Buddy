@@ -156,9 +156,8 @@ export default defineConfig(({ mode }) => {
                 const success = await serveScrapedImage(name, index, category, city);
                 if (success) return;
                 
-                // Redirect to fallback if scraping fails
-                res.writeHead(302, { 'Location': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80' });
-                res.end();
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'No image found' }));
                 return;
               }
               
@@ -191,8 +190,8 @@ export default defineConfig(({ mode }) => {
                   if (success) return;
                 }
                 
-                res.writeHead(302, { 'Location': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80' });
-                res.end();
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'No image found' }));
               } catch (e: any) {
                 console.error(`Google photo proxy failed:`, e);
                 if (nameParam) {
@@ -201,8 +200,8 @@ export default defineConfig(({ mode }) => {
                   const success = await serveScrapedImage(nameParam, 0, categoryVal, cityVal);
                   if (success) return;
                 }
-                res.writeHead(500, { 'Content-Type': 'application/json' })
-                res.end(JSON.stringify({ error: e.message }))
+                res.writeHead(404, { 'Content-Type': 'application/json' })
+                res.end(JSON.stringify({ error: 'No image found' }))
               }
               return
             }

@@ -71,9 +71,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     const success = await serveScrapedImage(name, index, category, city);
     if (success) return;
     
-    // Redirect to fallback if scraping fails
-    res.writeHead(302, { 'Location': fallbackUrl });
-    res.end();
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'No image found' }));
     return;
   }
   
@@ -107,8 +106,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       if (success) return;
     }
     
-    res.writeHead(302, { 'Location': fallbackUrl });
-    res.end();
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'No image found' }));
   } catch (e: any) {
     console.error(`Google photo proxy failed:`, e);
     if (nameParam) {
@@ -116,7 +115,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       const success = await serveScrapedImage(nameParam, 0, categoryParam, cityVal);
       if (success) return;
     }
-    res.writeHead(302, { 'Location': fallbackUrl });
-    res.end();
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'No image found' }));
   }
 }

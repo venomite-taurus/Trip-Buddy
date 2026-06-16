@@ -22,6 +22,22 @@ export interface Place {
   reviews?: any[];
 }
 
+export function matchCityKey(input: string): string {
+  const norm = input.toLowerCase();
+  if (norm.includes('puducherry') || norm.includes('pondicherry')) {
+    return 'pondicherry';
+  }
+  if (norm.includes('bangalore') || norm.includes('bengaluru')) {
+    return 'bengaluru';
+  }
+  for (const key of Object.keys(REAL_CITY_PLACES)) {
+    if (norm.includes(key) || key.includes(norm)) {
+      return key;
+    }
+  }
+  return 'jaipur'; // default fallback
+}
+
 export interface TripPreferences {
   destination: string;
   days: number;
@@ -232,13 +248,7 @@ export function getMockPlaceDetails(placeId: string): Partial<Place> {
   const idx = Number(parts[3]) || 0;
 
   // Resolve matching city key
-  let matchedCity = 'jaipur';
-  for (const key of Object.keys(REAL_CITY_PLACES)) {
-    if (cityRaw.includes(key) || key.includes(cityRaw)) {
-      matchedCity = key;
-      break;
-    }
-  }
+  const matchedCity = matchCityKey(cityRaw);
 
   const cityData = REAL_CITY_PLACES[matchedCity];
   const city = matchedCity.charAt(0).toUpperCase() + matchedCity.slice(1);
@@ -778,12 +788,7 @@ export async function generateRecommendations(
     .sort((a, b) => (b.score || 0) - (a.score || 0))
     .slice(0, 35);
 
-  // If no stays were found, it means the API requests failed or were denied.
-  // We trigger the mock fallback recommendations generator so the app still works!
-  if (stays.length === 0) {
-    console.warn(`No Google places found for lodging. Falling back to local mock recommendations generator.`);
-    return generateMockRecommendations(center, prefs);
-  }
+
 
   // Eats (Restaurants/Cafes/Bars/Bakeries) - Rated 2.5+
   const eatsRawCombined = [...restaurantRaw, ...cafeRaw, ...barRaw, ...bakeryRaw];
@@ -802,6 +807,13 @@ export async function generateRecommendations(
     .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
     .sort((a, b) => (b.score || 0) - (a.score || 0))
     .slice(0, 35);
+
+  // If API requests failed, returned low results due to quota limits, or were denied,
+  // we trigger the mock fallback recommendations generator so the app still works and stays rich!
+  if (stays.length < 15 || eats.length < 15 || visits.length < 15) {
+    console.warn(`Insufficient Google places found (Stays: ${stays.length}, Eats: ${eats.length}, Visits: ${visits.length}). Falling back to local mock recommendations generator.`);
+    return generateMockRecommendations(center, prefs);
+  }
 
   // Roam (Parks, viewpoints, shopping malls, markets, hiking areas) - Rated 2.5+
   const roamRawCombined = [...parkRaw, ...mallRaw, ...marketRaw, ...hikingRaw];
@@ -873,13 +885,7 @@ export function generateMockRecommendations(
   const cityInput = prefs.destination.split(',')[0].trim().toLowerCase();
   
   // Find matching city in our real places database
-  let matchedCity = 'jaipur';
-  for (const key of Object.keys(REAL_CITY_PLACES)) {
-    if (cityInput.includes(key) || key.includes(cityInput)) {
-      matchedCity = key;
-      break;
-    }
-  }
+  const matchedCity = matchCityKey(cityInput);
 
   const cityData = REAL_CITY_PLACES[matchedCity];
   const city = matchedCity.charAt(0).toUpperCase() + matchedCity.slice(1);
@@ -896,13 +902,26 @@ export function generateMockRecommendations(
 
   // Generate Stays
   const stays: Place[] = [];
-  const mockStaysData = cityData.stay[prefs.stayBudgetCategory] || cityData.stay['mid-range'];
+  const stayCats = ['budget', 'mid-range', 'luxury'];
+  const prioritizedCats = [
+    prefs.stayBudgetCategory,
+    ...stayCats.filter(c => c !== prefs.stayBudgetCategory)
+  ];
   
-  const limitStays = Math.min(35, mockStaysData.length);
+  let combinedStaysData: { item: any, category: string }[] = [];
+  for (const cat of prioritizedCats) {
+    const list = (cityData.stay as any)[cat] || [];
+    combinedStaysData = [
+      ...combinedStaysData,
+      ...list.map((item: any) => ({ item, category: cat }))
+    ];
+  }
+  
+  const limitStays = Math.min(35, combinedStaysData.length);
   for (let i = 0; i < limitStays; i++) {
     const coords = offsetCoord(i);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
-    const placeData = mockStaysData[i];
+    const { item: placeData, category: itemCat } = combinedStaysData[i];
     stays.push({
       place_id: `mock-stay-${matchedCity}-${i}`,
       name: placeData.name,
@@ -910,7 +929,7 @@ export function generateMockRecommendations(
       lat: coords.lat,
       lng: coords.lng,
       address: placeData.address || `${10 + i}, Hotel Row Street, ${city}, India`,
-      price_level: prefs.stayBudgetCategory === 'budget' ? 1 : prefs.stayBudgetCategory === 'luxury' ? 4 : 2,
+      price_level: itemCat === 'budget' ? 1 : itemCat === 'luxury' ? 4 : 2,
       google_rating: placeData.rating,
       user_ratings_total: placeData.user_ratings_total,
       photo_refs: getPhotosForPlaceByName(placeData.name, matchedCity, 'stay', i),
@@ -921,13 +940,26 @@ export function generateMockRecommendations(
 
   // Generate Eats
   const eats: Place[] = [];
-  const mockEatsData = cityData.eat[prefs.foodBudgetCategory] || cityData.eat['mid-range'];
+  const eatCats = ['street', 'mid-range', 'fine'];
+  const prioritizedEatCats = [
+    prefs.foodBudgetCategory,
+    ...eatCats.filter(c => c !== prefs.foodBudgetCategory)
+  ];
   
-  const limitEats = Math.min(35, mockEatsData.length);
+  let combinedEatsData: { item: any, category: string }[] = [];
+  for (const cat of prioritizedEatCats) {
+    const list = (cityData.eat as any)[cat] || [];
+    combinedEatsData = [
+      ...combinedEatsData,
+      ...list.map((item: any) => ({ item, category: cat }))
+    ];
+  }
+  
+  const limitEats = Math.min(35, combinedEatsData.length);
   for (let i = 0; i < limitEats; i++) {
     const coords = offsetCoord(i + 8);
     const dist = calculateDistance(center.lat, center.lng, coords.lat, coords.lng);
-    const placeData = mockEatsData[i];
+    const { item: placeData, category: itemCat } = combinedEatsData[i];
     eats.push({
       place_id: `mock-eat-${matchedCity}-${i}`,
       name: placeData.name,
@@ -935,7 +967,7 @@ export function generateMockRecommendations(
       lat: coords.lat,
       lng: coords.lng,
       address: placeData.address || `${24 + i}, Food Junction, ${city}, India`,
-      price_level: prefs.foodBudgetCategory === 'street' ? 1 : prefs.foodBudgetCategory === 'fine' ? 4 : 2,
+      price_level: itemCat === 'street' ? 1 : itemCat === 'fine' ? 4 : 2,
       google_rating: placeData.rating,
       user_ratings_total: placeData.user_ratings_total,
       photo_refs: getPhotosForPlaceByName(placeData.name, matchedCity, 'eat', i),
@@ -1380,14 +1412,7 @@ export function getPhotosForPlaceByName(name: string, city: string, category: st
 
 // Retrieve a set of 3 related mock photos for a destination city and category
 export function getPhotosForPlace(city: string, category: string, idx: number): string[] {
-  const normCity = city.toLowerCase();
-  let matchedCity = 'jaipur';
-  for (const key of Object.keys(REAL_CITY_PLACES)) {
-    if (normCity.includes(key) || key.includes(normCity)) {
-      matchedCity = key;
-      break;
-    }
-  }
+  const matchedCity = matchCityKey(city);
 
   const cityData = REAL_CITY_PLACES[matchedCity];
   let primaryPhotos: string[] = [];
@@ -1461,38 +1486,43 @@ export function getCategoryTerms(category: string, city: string): string[] {
   const cityLower = city.toLowerCase();
   
   if (cityLower.includes('udaipur')) {
-    if (c === 'stay') return ['Udaipur hotel', 'Udaipur palace hotel', 'Udaipur resort'];
-    if (c === 'eat') return ['Udaipur restaurant', 'Udaipur food', 'Rajasthani thali'];
+    if (c === 'stay') return ['Udaipur City Palace', 'Lake Pichola Udaipur', 'Udaipur'];
+    if (c === 'eat') return ['Udaipur food', 'Rajasthani thali', 'Udaipur'];
     if (c === 'visit' || c === 'roam') return ['Udaipur lake', 'Udaipur City Palace', 'Jagmandir', 'Lake Pichola Udaipur'];
   }
   if (cityLower.includes('puducherry') || cityLower.includes('pondicherry')) {
-    if (c === 'stay') return ['Puducherry hotel', 'Pondicherry french quarter hotel', 'Pondicherry resort'];
-    if (c === 'eat') return ['Puducherry restaurant', 'Pondicherry french cafe', 'Pondicherry food'];
-    if (c === 'visit' || c === 'roam') return ['Pondicherry french quarter', 'Promenade Beach Puducherry', 'Auroville', 'Rock Beach Puducherry'];
+    if (c === 'stay') return ['Pondicherry French Quarter', 'Pondicherry street', 'Pondicherry'];
+    if (c === 'eat') return ['Pondicherry cafe', 'Pondicherry food', 'Pondicherry'];
+    if (c === 'visit' || c === 'roam') return ['Promenade Beach Puducherry', 'Auroville Pondicherry', 'Rock Beach Puducherry', 'Pondicherry'];
   }
   if (cityLower.includes('goa')) {
-    if (c === 'stay') return ['Goa resort beach', 'Goa hotel', 'Goa lodging'];
-    if (c === 'eat') return ['Goa beach shack restaurant', 'Goa restaurant food', 'Goan fish curry'];
-    if (c === 'visit' || c === 'roam') return ['Goa beach', 'Anjuna beach Goa', 'Calangute beach', 'Old Goa church'];
+    if (c === 'stay') return ['Goa beach', 'Goa'];
+    if (c === 'eat') return ['Goan food', 'Goa beach shack', 'Goa'];
+    if (c === 'visit' || c === 'roam') return ['Goa beach', 'Goa waterfall', 'Old Goa church', 'Goa'];
   }
   if (cityLower.includes('bengaluru') || cityLower.includes('bangalore')) {
-    if (c === 'stay') return ['Bangalore luxury hotel', 'Bengaluru hotel'];
-    if (c === 'eat') return ['Bangalore cafe', 'Bangalore restaurant', 'South Indian breakfast Bangalore'];
+    if (c === 'stay') return ['Bangalore Palace', 'Bengaluru'];
+    if (c === 'eat') return ['Bangalore cafe', 'South Indian breakfast Bangalore', 'Bengaluru'];
     if (c === 'visit' || c === 'roam') return ['Bangalore Palace', 'Lalbagh Glass House', 'Cubbon Park Bengaluru'];
+  }
+  if (cityLower.includes('leh') || cityLower.includes('ladakh')) {
+    if (c === 'stay') return ['Leh town', 'Leh streets', 'Leh'];
+    if (c === 'eat') return ['Leh food', 'Leh cafe', 'Leh'];
+    if (c === 'visit' || c === 'roam') return ['Leh Palace', 'Shanti Stupa Leh', 'Ladakh'];
   }
 
   const capCity = city.charAt(0).toUpperCase() + city.slice(1);
   if (c === 'stay') {
-    return [`${capCity} hotel`, `${capCity} resort`, `${capCity} lodging`];
+    return [`${capCity} street`, `${capCity}`];
   }
   if (c === 'eat') {
-    return [`${capCity} restaurant`, `${capCity} cafe`, `${capCity} food`];
+    return [`${capCity} food`, `${capCity}`];
   }
   if (c === 'visit' || c === 'roam') {
-    return [`${capCity} tourist attraction`, `${capCity} sightseeing`, `${capCity} lake`, `${capCity} palace`, `${capCity} beach`, `${capCity} temple`];
+    return [`${capCity} landmark`, `${capCity}`];
   }
   
-  return [`${capCity} tourism`, `${capCity} landmark`];
+  return [`${capCity}`];
 }
 
 export async function queryWikimediaCommons(searchQuery: string): Promise<string[]> {
@@ -1556,12 +1586,29 @@ export async function queryWikimediaCommons(searchQuery: string): Promise<string
   return [];
 }
 
+export function cleanPlaceName(name: string): string {
+  // Strip parentheses and anything inside
+  let clean = name.replace(/\([^)]*\)/g, '');
+  // Strip hyphens and everything after if it's a sub-detail
+  if (clean.includes(' - ')) {
+    clean = clean.split(' - ')[0];
+  }
+  return clean.trim();
+}
+
 export async function resolveScrapedImageUrls(
   name: string,
   category?: string,
   city?: string
 ): Promise<string[]> {
-  const cleanedName = name.replace(/%[0-9A-Fa-f]{2}/g, ' ').trim();
+  let decodedName = name;
+  try {
+    decodedName = decodeURIComponent(name);
+  } catch (e) {
+    // ignore
+  }
+  let cleanedName = decodedName.replace(/%[0-9A-Fa-f]{2}/g, ' ').trim();
+  cleanedName = cleanPlaceName(cleanedName);
   
   if (city) {
     const query = `${cleanedName} ${city}`;
@@ -1572,14 +1619,16 @@ export async function resolveScrapedImageUrls(
   const urlsSpecific = await queryWikimediaCommons(cleanedName);
   if (urlsSpecific.length > 0) return urlsSpecific;
   
-  if (city) {
-    const noiseWords = /\b(hotel|resort|restaurant|cafe|castle|inn|bar|lounge|palace|stay|eat|visit|roam)\b/gi;
-    const cleanNameOnly = cleanedName.replace(noiseWords, '').replace(/\s+/g, ' ').trim();
-    if (cleanNameOnly && cleanNameOnly.toLowerCase() !== cleanedName.toLowerCase()) {
+  const noiseWords = /\b(hotel|resort|restaurant|cafe|castle|inn|bar|lounge|palace|stay|eat|visit|roam|french quarter|white town|boutique|heritage|homestay|guesthouse|guest house|hostel|lodging|museum|fort|monastery|temple|shack)\b/gi;
+  const cleanNameOnly = cleanedName.replace(noiseWords, '').replace(/\s+/g, ' ').trim();
+  if (cleanNameOnly && cleanNameOnly.toLowerCase() !== cleanedName.toLowerCase()) {
+    if (city) {
       const query = `${cleanNameOnly} ${city}`;
       const urls = await queryWikimediaCommons(query);
       if (urls.length > 0) return urls;
     }
+    const urls = await queryWikimediaCommons(cleanNameOnly);
+    if (urls.length > 0) return urls;
   }
   
   // Helper to shift array for fallbacks to prevent identical images for different places
@@ -1593,20 +1642,32 @@ export async function resolveScrapedImageUrls(
     return [...urlsList.slice(offset), ...urlsList.slice(0, offset)];
   };
 
+  const isCleanUrl = (urlStr: string): boolean => {
+    const lower = urlStr.toLowerCase();
+    return !lower.includes('yathumaagi') && 
+           !lower.includes('cactus') && 
+           !lower.endsWith('.pdf') && 
+           !lower.endsWith('.djvu') && 
+           !lower.endsWith('.ogv') && 
+           !lower.endsWith('.ogg');
+  };
+
   if (category && city) {
     const terms = getCategoryTerms(category, city);
     for (const term of terms) {
       const urls = await queryWikimediaCommons(term);
-      if (urls.length > 0) {
-        return getShiftedUrls(urls);
+      const cleanUrls = urls.filter(isCleanUrl);
+      if (cleanUrls.length > 0) {
+        return getShiftedUrls(cleanUrls);
       }
     }
   }
   
   if (city) {
     const urls = await queryWikimediaCommons(city);
-    if (urls.length > 0) {
-      return getShiftedUrls(urls);
+    const cleanUrls = urls.filter(isCleanUrl);
+    if (cleanUrls.length > 0) {
+      return getShiftedUrls(cleanUrls);
     }
   }
   

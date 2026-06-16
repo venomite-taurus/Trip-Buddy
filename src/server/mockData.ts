@@ -1599,114 +1599,161 @@ export const REAL_CITY_PLACES: Record<string, CityData> = {
   pondicherry: {
     stay: {
       budget: [
-        {
-          name: "Zostel Pondicherry",
-          address: "No. 40, Chetty Street, Near White Town, Puducherry 605001",
-          rating: 4.6,
-          user_ratings_total: 780,
-          photo_refs: [
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80"
-          ]
-        }
+        { name: "Zostel Pondicherry", address: "No. 40, Chetty Street, Near White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 780 },
+        { name: "Micasa Hostels", address: "No. 2, St. Therese Street, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 410 },
+        { name: "Valentine Guest House Pondicherry", address: "No. 42, H.M. Kassim Salai, Heritage Town, Puducherry 605001", rating: 4.3, user_ratings_total: 120 },
+        { name: "Lotus Guest House Pondicherry", address: "No. 12, Suffren Street, White Town, Puducherry 605001", rating: 4.2, user_ratings_total: 95 },
+        { name: "D'Europe Guest House Pondicherry", address: "No. 15, Suffren Street, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 150 },
+        { name: "International Guest House Pondicherry", address: "No. 3, Dumas Street, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 280 },
+        { name: "Park Guest House Pondicherry", address: "No. 1, Goubert Avenue, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 820 },
+        { name: "New Guest House Pondicherry", address: "No. 23, Romain Rolland Street, White Town, Puducherry 605001", rating: 4.1, user_ratings_total: 110 },
+        { name: "Seaside Guest House Pondicherry", address: "No. 14, Goubert Avenue, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 650 },
+        { name: "La Maison de L'Alliance Pondicherry", address: "No. 9, Rue de la Caserne, White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 90 },
+        { name: "Cozy Nomads Hostel", address: "No. 18, Needarajapayar Street, Puducherry 605001", rating: 4.4, user_ratings_total: 75 },
+        { name: "Socialila Hostel Pondicherry", address: "No. 5, St. Laurent Street, Heritage Town, Puducherry 605001", rating: 4.5, user_ratings_total: 180 }
       ],
       'mid-range': [
-        {
-          name: "Villa Shanti French Quarter",
-          address: "14, Suffren Street, White Town, Puducherry 605001",
-          rating: 4.6,
-          user_ratings_total: 1850,
-          photo_refs: [
-            "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
-          ]
-        }
+        { name: "Villa Shanti French Quarter", address: "14, Suffren Street, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 1850 },
+        { name: "Le Dupleix", address: "5, Caserne Street, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 1200 },
+        { name: "La Villa Pondicherry", address: "11, Surcouf Street, White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 350 },
+        { name: "Maison Perumal (Cgh Earth)", address: "58, Perumal Koil Street, Heritage Town, Puducherry 605001", rating: 4.6, user_ratings_total: 480 },
+        { name: "Shenbaga Hotel and Convention Centre", address: "42, S.V. Patel Salai, Heritage Town, Puducherry 605001", rating: 4.2, user_ratings_total: 2200 },
+        { name: "The Promenade Pondicherry", address: "23, Goubert Avenue, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 1980 },
+        { name: "Hotel Atithi Pondicherry", address: "135, S.V. Patel Salai, Heritage Town, Puducherry 605001", rating: 4.1, user_ratings_total: 1650 },
+        { name: "Accord Puducherry", address: "1, Thilagar Nagar, Ellaipillaichavady, Puducherry 605009", rating: 4.3, user_ratings_total: 2400 },
+        { name: "Windflower Resort and Spa Pondicherry", address: "Survey No. 198/1, 198/2, Chinnaveerampattinam, Puducherry 605007", rating: 4.2, user_ratings_total: 1150 },
+        { name: "Hotel de l'Orient Pondicherry", address: "17, Romain Rolland Street, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 580 },
+        { name: "Villa Bayoud Pondicherry", address: "18, Rue de la Marine, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 190 },
+        { name: "Richmond Pondicherry", address: "12, Bussy Street, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 310 }
       ],
       luxury: [
-        {
-          name: "Palais de Mahe (Cgh Earth)",
-          address: "4, Bussy Street, White Town, Puducherry 605001",
-          rating: 4.8,
-          user_ratings_total: 1100,
-          photo_refs: [
-            "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80"
-          ]
-        }
+        { name: "Palais de Mahe (Cgh Earth)", address: "4, Bussy Street, White Town, Puducherry 605001", rating: 4.8, user_ratings_total: 1100 },
+        { name: "Dune Eco Village and Spa", address: "Pudhu Kuppam, Keelputhupet, Via East Coast Road, Puducherry 605014", rating: 4.4, user_ratings_total: 1450 },
+        { name: "Ocean Spray Resort Pondicherry", address: "200, East Coast Road, Manjakuppam, Puducherry 604303", rating: 4.3, user_ratings_total: 2900 },
+        { name: "Le Pondy Beach Resort", address: "No. 3, Lake View Road, Pudukuppam, Puducherry 605007", rating: 4.4, user_ratings_total: 3800 },
+        { name: "Niraamaya Retreats Backwaters & ripples", address: "River View Road, Nonankuppam, Puducherry 605007", rating: 4.5, user_ratings_total: 120 },
+        { name: "Raddison Resort Pondicherry", address: "East Coast Road, Kalapet, Puducherry 605014", rating: 4.6, user_ratings_total: 450 },
+        { name: "Heritage Prime Resort Pondicherry", address: "No. 8, Beach Road, Chinnaveerampattinam, Puducherry 605007", rating: 4.2, user_ratings_total: 95 },
+        { name: "Mango Hill Pondicherry", address: "Mango Hill Road, Keelputhupet, Puducherry 605014", rating: 4.3, user_ratings_total: 620 },
+        { name: "Club Mahindra Puducherry", address: "Manapet, Bahour Commune, Puducherry 607402", rating: 4.4, user_ratings_total: 2150 },
+        { name: "Residency Towers Puducherry", address: "188, West Boulevard Road, Heritage Town, Puducherry 605001", rating: 4.6, user_ratings_total: 540 },
+        { name: "St James Court Beach Resort", address: "Chinno Kalapet, East Coast Road, Puducherry 605014", rating: 4.0, user_ratings_total: 1100 },
+        { name: "Anandha Inn Pondicherry", address: "154, S.V. Patel Salai, Heritage Town, Puducherry 605001", rating: 4.0, user_ratings_total: 1750 }
       ]
     },
     eat: {
       street: [
-        {
-          name: "Baker Street French Bakery",
-          address: "123, Bussy Street, White Town, Puducherry 605001",
-          rating: 4.4,
-          user_ratings_total: 6800,
-          photo_refs: [
-            "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80"
-          ]
-        }
+        { name: "Baker Street French Bakery", address: "123, Bussy Street, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 6800 },
+        { name: "GMT Ice Cream Pondicherry", address: "Goubert Avenue, Promenade Beach, Puducherry 605001", rating: 4.5, user_ratings_total: 1950 },
+        { name: "Cafe Xtasi", address: "245, Mission Street, Heritage Town, Puducherry 605001", rating: 4.2, user_ratings_total: 3100 },
+        { name: "Zuka Choco-La Pondicherry", address: "100, Cathedral Street, Heritage Town, Puducherry 605001", rating: 4.6, user_ratings_total: 1450 },
+        { name: "Hot Breads Pondicherry", address: "Ambour Salai, Heritage Town, Puducherry 605001", rating: 4.1, user_ratings_total: 2100 },
+        { name: "Eat My Cake Pondicherry", address: "14, St. Laurent Street, Heritage Town, Puducherry 605001", rating: 4.4, user_ratings_total: 320 },
+        { name: "Gelateria Montecatini Terme", address: "Goubert Avenue, Promenade Beach, Puducherry 605001", rating: 4.5, user_ratings_total: 890 },
+        { name: "Le Cafe Pondicherry", address: "Goubert Avenue, Promenade Beach, Puducherry 605001", rating: 4.0, user_ratings_total: 4500 },
+        { name: "Pondicherry Crepe in Touch", address: "29, Needarajapayar Street, Puducherry 605001", rating: 4.5, user_ratings_total: 160 },
+        { name: "Murutu Soup Stall Pondicherry", address: "MG Road Market, Puducherry 605001", rating: 4.6, user_ratings_total: 230 },
+        { name: "Puducherry Coffee Shanti", address: "Cathedral Street, Puducherry 605001", rating: 4.3, user_ratings_total: 90 },
+        { name: "Surguru Spot Pondicherry", address: "Mission Street, Puducherry 605001", rating: 4.2, user_ratings_total: 540 }
       ],
       'mid-range': [
-        {
-          name: "Coromandel Cafe",
-          address: "8, Romana Street, White Town, Puducherry 605001",
-          rating: 4.5,
-          user_ratings_total: 4200,
-          photo_refs: [
-            "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"
-          ]
-        }
+        { name: "Coromandel Cafe", address: "8, Romana Street, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 4200 },
+        { name: "Villa Shanti Restaurant", address: "14, Suffren Street, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 1650 },
+        { name: "Le Dupleix Restaurant", address: "5, Caserne Street, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 920 },
+        { name: "Crepe in Touch Pondicherry", address: "29, Needarajapayar Street, Puducherry 605001", rating: 4.5, user_ratings_total: 160 },
+        { name: "Hope Cafe Pondicherry", address: "3, Rue de la Cazerne, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 210 },
+        { name: "Cafe Des Arts Pondicherry", address: "10, Suffren Street, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 3800 },
+        { name: "Rendezvous Pondicherry", address: "24, Rue de la Bussy, White Town, Puducherry 605001", rating: 4.1, user_ratings_total: 1750 },
+        { name: "Tanto Pizzeria Pondicherry", address: "Near Serenity Beach, East Coast Road, Puducherry 605008", rating: 4.3, user_ratings_total: 2150 },
+        { name: "The Spot White Town Cafe", address: "18, Rue de la Marine, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 420 },
+        { name: "The Indian Kaffe Express", address: "3, Rue de la Marine, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 890 },
+        { name: "Satsanga Pondicherry", address: "54, Labelle Street, White Town, Puducherry 605001", rating: 4.0, user_ratings_total: 1100 },
+        { name: "Surguru Restaurant", address: "104, Mission Street, Heritage Town, Puducherry 605001", rating: 4.3, user_ratings_total: 3500 }
       ],
       fine: [
-        {
-          name: "Carte Blanche at Palais de Mahe",
-          address: "4, Bussy Street, White Town, Puducherry 605001",
-          rating: 4.6,
-          user_ratings_total: 750,
-          photo_refs: [
-            "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=80"
-          ]
-        }
+        { name: "Carte Blanche at Palais de Mahe", address: "4, Bussy Street, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 750 },
+        { name: "La Villa Restaurant Pondicherry", address: "11, Surcouf Street, White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 280 },
+        { name: "Maison Perumal Restaurant", address: "58, Perumal Koil Street, Heritage Town, Puducherry 605001", rating: 4.5, user_ratings_total: 190 },
+        { name: "Blueline at The Promenade", address: "23, Goubert Avenue, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 820 },
+        { name: "Bay of Buddha Pondicherry", address: "23, Goubert Avenue, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 510 },
+        { name: "Lighthouse Rooftop Restaurant Pondicherry", address: "23, Goubert Avenue, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 940 },
+        { name: "Pavilion at Accord Puducherry", address: "1, Thilagar Nagar, Ellaipillaichavady, Puducherry 605009", rating: 4.2, user_ratings_total: 630 },
+        { name: "The Courtyard at Richmond", address: "12, Bussy Street, White Town, Puducherry 605001", rating: 4.1, user_ratings_total: 140 },
+        { name: "Hotel de l'Orient Dine", address: "17, Romain Rolland Street, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 310 },
+        { name: "Escape Restaurant Pondicherry", address: "S.V. Patel Salai, Heritage Town, Puducherry 605001", rating: 4.2, user_ratings_total: 180 },
+        { name: "Skygarden Rooftop Dine", address: "Shenbaga Hotel, S.V. Patel Salai, Puducherry 605001", rating: 4.3, user_ratings_total: 220 },
+        { name: "Villa Shanti Courtyard Fine Dine", address: "14, Suffren Street, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 850 }
       ]
     },
     visit: [
-      {
-        name: "Auroville Matrimandir",
-        address: "Matrimandir Road, Auroville, Tamil Nadu 605101",
-        rating: 4.7,
-        user_ratings_total: 18500,
-        photo_refs: [
-          "https://images.unsplash.com/photo-1589519160732-57fc498494f8?auto=format&fit=crop&w=800&q=80"
-        ]
-      },
-      {
-        name: "Basilica of the Sacred Heart",
-        address: "South Boulevard, Near Railway Station, Puducherry 605001",
-        rating: 4.6,
-        user_ratings_total: 9400,
-        photo_refs: [
-          "https://images.unsplash.com/photo-1589519160732-57fc498494f8?auto=format&fit=crop&w=800&q=80"
-        ]
-      }
+      { name: "Auroville Matrimandir", address: "Matrimandir Road, Auroville, Tamil Nadu 605101", rating: 4.7, user_ratings_total: 18500 },
+      { name: "Sri Aurobindo Ashram", address: "Marine Street, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 11200 },
+      { name: "Basilica of the Sacred Heart of Jesus", address: "South Boulevard, Near Railway Station, Puducherry 605001", rating: 4.6, user_ratings_total: 9400 },
+      { name: "Immaculate Conception Cathedral", address: "Cathedral Street, Heritage Town, Puducherry 605001", rating: 4.5, user_ratings_total: 2300 },
+      { name: "Arulmigu Manakula Vinayagar Temple", address: "Manakula Vinayagar Street, White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 7800 },
+      { name: "Varadaraja Perumal Temple Pondicherry", address: "MG Road, Heritage Town, Puducherry 605001", rating: 4.4, user_ratings_total: 620 },
+      { name: "Pondicherry Museum", address: "Easwaran Kovil Street, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 1950 },
+      { name: "French War Memorial", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.2, user_ratings_total: 1450 },
+      { name: "Old Lighthouse Pondicherry", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.1, user_ratings_total: 850 },
+      { name: "Notre Dame des Anges Church", address: "Dumas Street, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 1100 },
+      { name: "Auroville Visitor Centre", address: "Auroville, Tamil Nadu 605101", rating: 4.6, user_ratings_total: 9800 },
+      { name: "Chunnambar Boat House", address: "Nonankuppam, Puducherry 605007", rating: 4.1, user_ratings_total: 7900 },
+      { name: "Paradise Beach Island", address: "Nonankuppam, Puducherry 605007", rating: 4.6, user_ratings_total: 14200 },
+      { name: "Serenity Beach Pondicherry", address: "Kottakuppam, Puducherry 605104", rating: 4.3, user_ratings_total: 9500 },
+      { name: "Botanical Garden Pondicherry", address: "Marimalai Adigal Salai, Puducherry 605001", rating: 4.2, user_ratings_total: 4600 },
+      { name: "Ousteri Lake Pondicherry", address: "Vazhudavur Road, Puducherry 605009", rating: 4.0, user_ratings_total: 810 },
+      { name: "Arikamedu Archaeological Site", address: "Arikamedu, Kakkayanthoppu, Puducherry 605007", rating: 4.1, user_ratings_total: 650 },
+      { name: "Mahatma Gandhi Statue Promenade", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 11000 },
+      { name: "Kargil War Memorial Pondicherry", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 240 },
+      { name: "Sri Gokilambal Thirukameswarar Temple", address: "Villianur, Puducherry 605110", rating: 4.6, user_ratings_total: 1250 },
+      { name: "Cluny Embroidery Centre", address: "Rue Romain Rolland, White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 310 },
+      { name: "Bharathi Park Pondicherry", address: "Rue de la Caserne, White Town, Puducherry 605001", rating: 4.3, user_ratings_total: 3500 },
+      { name: "Aayi Mandapam Monument", address: "Bharathi Park, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 1100 },
+      { name: "Pondicherry Science Centre & Planetarium", address: "Kuruchikuppam, Puducherry 605001", rating: 4.1, user_ratings_total: 320 },
+      { name: "Veerampattinam Beach Temple", address: "Veerampattinam, Puducherry 605007", rating: 4.5, user_ratings_total: 410 },
+      { name: "Kanniga Parameswari Temple Pondicherry", address: "Cathedral Street, Puducherry 605001", rating: 4.3, user_ratings_total: 190 },
+      { name: "Jawahar Toy Museum Pondicherry", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 3.8, user_ratings_total: 120 },
+      { name: "Heritage Town Hall Pondicherry", address: "MG Road, Puducherry 605001", rating: 4.1, user_ratings_total: 230 },
+      { name: "Roman Rolland Library Pondicherry", address: "Dumas Street, White Town, Puducherry 605001", rating: 4.2, user_ratings_total: 350 },
+      { name: "Dupleix Statue Pondicherry", address: "Place de la Republique, White Town, Puducherry 605001", rating: 4.0, user_ratings_total: 280 },
+      { name: "Auro Beach Pondicherry", address: "Bommayapalayam, Puducherry 605101", rating: 4.1, user_ratings_total: 1950 },
+      { name: "Quiet Beach Pondicherry", address: "Chinno Kalapet, Puducherry 605014", rating: 4.2, user_ratings_total: 420 },
+      { name: "Sadhana Forest Pondicherry", address: "Sadhana Forest Road, Auroville, Tamil Nadu 605101", rating: 4.6, user_ratings_total: 890 },
+      { name: "Pondicherry Arts and Crafts Village", address: "Murungapakkam, Puducherry 605004", rating: 4.3, user_ratings_total: 620 },
+      { name: "French Institute of Pondicherry", address: "11, Saint Louis Street, White Town, Puducherry 605001", rating: 4.4, user_ratings_total: 210 },
+      { name: "Sankaraman Gompa", address: "Auroville Road, Puducherry 605101", rating: 4.2, user_ratings_total: 80 }
     ],
     roam: [
-      {
-        name: "French Quarter Wall Walkway",
-        address: "Dumas Street, White Town, Puducherry 605001",
-        rating: 4.7,
-        user_ratings_total: 18900,
-        photo_refs: [
-          "https://images.unsplash.com/photo-1590001155093-a3c66ab0c3ff?auto=format&fit=crop&w=800&q=80"
-        ]
-      },
-      {
-        name: "Promenade Beach Walk",
-        address: "Goubert Avenue, White Town, Puducherry 605001",
-        rating: 4.6,
-        user_ratings_total: 24500,
-        photo_refs: [
-          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
-        ]
-      }
+      { name: "Promenade Beach Walk", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 24500 },
+      { name: "Rock Beach Promenade", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 19800 },
+      { name: "White Town French Quarter Stroll", address: "Romain Rolland Street, White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 8900 },
+      { name: "Goubert Avenue Seaside walk", address: "Goubert Avenue, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 14500 },
+      { name: "Romain Rolland Street walk", address: "Romain Rolland Street, Puducherry 605001", rating: 4.5, user_ratings_total: 3100 },
+      { name: "Dumas Street Heritage Walk", address: "Dumas Street, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 2100 },
+      { name: "Suffren Street French colonial walk", address: "Suffren Street, White Town, Puducherry 605001", rating: 4.6, user_ratings_total: 1800 },
+      { name: "H.M. Kassim Salai market", address: "H.M. Kassim Salai, Heritage Town, Puducherry 605001", rating: 4.2, user_ratings_total: 950 },
+      { name: "Goubert Sunday Market", address: "MG Road, Heritage Town, Puducherry 605001", rating: 4.3, user_ratings_total: 3200 },
+      { name: "Mission Street shopping stroll", address: "Mission Street, Puducherry 605001", rating: 4.4, user_ratings_total: 4500 },
+      { name: "Bussy Street local markets", address: "Bussy Street, Puducherry 605001", rating: 4.2, user_ratings_total: 2900 },
+      { name: "Serenity Beach Sunrise Viewpoint", address: "Serenity Beach, Kottakuppam, Puducherry 605104", rating: 4.7, user_ratings_total: 1200 },
+      { name: "Serenity Beach Surfing Area", address: "Serenity Beach, Kottakuppam, Puducherry 605104", rating: 4.5, user_ratings_total: 850 },
+      { name: "Paradise Beach coastline walk", address: "Paradise Beach, Puducherry 605007", rating: 4.6, user_ratings_total: 3400 },
+      { name: "Chunnambar River banks", address: "Nonankuppam, Puducherry 605007", rating: 4.3, user_ratings_total: 1100 },
+      { name: "Auroville Forest walking trails", address: "Auroville, Tamil Nadu 605101", rating: 4.6, user_ratings_total: 680 },
+      { name: "Auroville Bakery garden walk", address: "Kuillapalayam, Auroville, Tamil Nadu 605101", rating: 4.5, user_ratings_total: 1950 },
+      { name: "Pondicherry Botanical Garden tree walk", address: "Botanical Garden, Puducherry 605001", rating: 4.4, user_ratings_total: 1300 },
+      { name: "Karuvadikuppam forest paths", address: "Karuvadikuppam, Puducherry 605008", rating: 4.3, user_ratings_total: 180 },
+      { name: "Veerampattinam beach walk", address: "Veerampattinam, Puducherry 605007", rating: 4.5, user_ratings_total: 620 },
+      { name: "Ousteri Lake bird watching spots", address: "Ousteri, Puducherry 605009", rating: 4.4, user_ratings_total: 210 },
+      { name: "Nonankuppam village trail", address: "Nonankuppam, Puducherry 605007", rating: 4.2, user_ratings_total: 110 },
+      { name: "Arikamedu ruins walking path", address: "Arikamedu, Puducherry 605007", rating: 4.1, user_ratings_total: 340 },
+      { name: "Goubert Avenue night market", address: "Goubert Avenue, Puducherry 605001", rating: 4.6, user_ratings_total: 5400 },
+      { name: "Nehru Street shopping stroll", address: "Nehru Street, Puducherry 605001", rating: 4.3, user_ratings_total: 2800 },
+      { name: "Cathedral Street heritage walk", address: "Cathedral Street, Puducherry 605001", rating: 4.4, user_ratings_total: 190 },
+      { name: "Lal Bahadur Shastri Street markets", address: "LBS Street, Puducherry 605001", rating: 4.1, user_ratings_total: 150 },
+      { name: "Bharathi Park lawn walking trails", address: "White Town, Puducherry 605001", rating: 4.5, user_ratings_total: 680 },
+      { name: "French Quarter photo spots", address: "White Town, Puducherry 605001", rating: 4.7, user_ratings_total: 1400 },
+      { name: "Pondicherry Marina Beach walk", address: "Marina Beach Road, Puducherry 605001", rating: 4.3, user_ratings_total: 750 }
     ]
   },
   leh: {

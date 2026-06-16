@@ -28,35 +28,19 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     return;
   }
 
-  // Helper function to serve a scraped image by name
+  // Helper function to redirect directly to a scraped image by name
   const serveScrapedImage = async (name: string, index: number) => {
     try {
       const urls = await resolveScrapedImageUrls(name);
       if (urls && urls.length > 0) {
-        for (let attempt = 0; attempt < Math.min(urls.length, 3); attempt++) {
-          const urlIndex = (index + attempt) % urls.length;
-          const imageUrl = urls[urlIndex];
-          try {
-            const imgRes = await fetch(imageUrl, {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-              },
-              signal: AbortSignal.timeout(5000)
-            });
-            if (imgRes.status === 200) {
-              const buffer = await imgRes.arrayBuffer();
-              const contentType = imgRes.headers.get('content-type') || 'image/jpeg';
-              res.writeHead(200, {
-                'Content-Type': contentType,
-                'Cache-Control': 'public, max-age=86400'
-              });
-              res.end(Buffer.from(buffer));
-              return true;
-            }
-          } catch (fetchErr) {
-            console.warn(`Failed to fetch image ${imageUrl} for ${name}:`, fetchErr);
-          }
-        }
+        const urlIndex = index % urls.length;
+        const imageUrl = urls[urlIndex];
+        res.writeHead(302, { 
+          'Location': imageUrl,
+          'Cache-Control': 'public, max-age=86400'
+        });
+        res.end();
+        return true;
       }
     } catch (err) {
       console.error(`resolveScrapedImageUrls failed for ${name}:`, err);
@@ -64,7 +48,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     return false;
   };
 
-  // Handle search-photo ref
+  // Handle search-photo ref: directly 302 redirect the browser to the crawled image URL
   if (ref.startsWith('search-photo:')) {
     const parts = ref.split(':');
     const name = decodeURIComponent(parts[1] || '');
@@ -89,7 +73,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     const response = await fetch(photoUrl);
     if (response.status === 200) {
       const buffer = await response.arrayBuffer();
-      const headers: Record<string, string> = {};
+      const headers: Record<string, string> = {
+        'Cache-Control': 'public, max-age=86400'
+      };
       const contentType = response.headers.get('content-type');
       if (contentType) {
         headers['Content-Type'] = contentType;

@@ -500,6 +500,7 @@ export const PlaceDetail: React.FC = () => {
                 src={getPhotoUrl(place.photo_refs && place.photo_refs[0], 0)} 
                 alt={place.name} 
                 className="absolute inset-0 w-full h-full object-cover"
+                referrerPolicy="no-referrer"
                 onError={(e) => {
                   const category = place.type || 'visit';
                   const fallbacks: Record<string, string> = {
@@ -525,6 +526,7 @@ export const PlaceDetail: React.FC = () => {
                   src={getPhotoUrl(place.photo_refs && place.photo_refs[1], 1)} 
                   alt={place.name} 
                   className="absolute inset-0 w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     const category = place.type || 'visit';
                     const fallbacks: Record<string, string> = {
@@ -547,6 +549,7 @@ export const PlaceDetail: React.FC = () => {
                   src={getPhotoUrl(place.photo_refs && place.photo_refs[2], 2)} 
                   alt={place.name} 
                   className="absolute inset-0 w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     const category = place.type || 'visit';
                     const fallbacks: Record<string, string> = {

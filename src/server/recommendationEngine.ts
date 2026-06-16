@@ -711,11 +711,12 @@ export async function generateRecommendations(
 
   // 3. Process, Score and Rank each category
 
-  // Stays (Lodging) - Target top 8
+  // Stays (Lodging) - Target top 12, rated 2.5+
   const stays = lodgingRaw
     .map(p => mapToPlace(p, 'stay', 'stay'))
+    .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
     .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 8);
+    .slice(0, 12);
 
   // If no stays were found, it means the API requests failed or were denied.
   // We trigger the mock fallback recommendations generator so the app still works!
@@ -724,30 +725,31 @@ export async function generateRecommendations(
     return generateMockRecommendations(center, prefs);
   }
 
-  // Eats (Restaurants/Cafes) - Target top 10
+  // Eats (Restaurants/Cafes) - Rated 2.5+
   const eatsRawCombined = [...restaurantRaw, ...cafeRaw];
   const uniqueEats = Array.from(new Map(eatsRawCombined.map(item => [item.id || item.place_id || (item.displayName?.text || item.name || ''), item])).values());
   const eats = uniqueEats
     .map(p => mapToPlace(p, 'eat', 'eat'))
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 10);
+    .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
+    .sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  // Visits (Sightseeing/Attractions/Museums/Temples) - Target top 12
+  // Visits (Sightseeing/Attractions/Museums/Temples) - Rated 2.5+
   const visitRawCombined = [...attractionRaw, ...museumRaw, ...worshipRaw];
   const uniqueVisits = Array.from(new Map(visitRawCombined.map(item => [item.id || item.place_id || (item.displayName?.text || item.name || ''), item])).values());
   const visits = uniqueVisits
     .map(p => mapToPlace(p, 'visit', 'visit'))
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 12);
+    .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
+    .sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  // Roam (Parks, viewpoints, markets, local things) - Target top 6
+  // Roam (Parks, viewpoints, markets, local things) - Rated 2.5+
   // We filter out any place already categorized as "visit"
   const visitIds = new Set(visits.map(v => v.place_id));
   const roams = parkRaw
     .filter(p => !visitIds.has(p.id || p.place_id))
     .map(p => mapToPlace(p, 'roam', 'roam'))
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 6);
+    .filter(p => p.google_rating === undefined || p.google_rating >= 2.5)
+    .sort((a, b) => (b.score || 0) - (a.score || 0));
+
 
   // Transports (Bus and Train stations) - Target top 5
   const transportRawCombined = [...busRaw, ...trainRaw];

@@ -1554,17 +1554,32 @@ export async function resolveScrapedImageUrls(
     }
   }
   
+  // Helper to shift array for fallbacks to prevent identical images for different places
+  const getShiftedUrls = (urlsList: string[]): string[] => {
+    if (urlsList.length === 0) return urlsList;
+    let hash = 0;
+    for (let i = 0; i < cleanedName.length; i++) {
+      hash += cleanedName.charCodeAt(i);
+    }
+    const offset = hash % urlsList.length;
+    return [...urlsList.slice(offset), ...urlsList.slice(0, offset)];
+  };
+
   if (category && city) {
     const terms = getCategoryTerms(category, city);
     for (const term of terms) {
       const urls = await queryWikimediaCommons(term);
-      if (urls.length > 0) return urls;
+      if (urls.length > 0) {
+        return getShiftedUrls(urls);
+      }
     }
   }
   
   if (city) {
     const urls = await queryWikimediaCommons(city);
-    if (urls.length > 0) return urls;
+    if (urls.length > 0) {
+      return getShiftedUrls(urls);
+    }
   }
   
   return [];

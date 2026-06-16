@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-  const query = "Accord Puducherry";
+  const query = "Taj Mahal";
   const url = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}`;
   
   const bingRes = await fetch(url, {
